@@ -1,257 +1,93 @@
-// class RecoverySaleModel {
-//   bool? success;
-//   String? message;
-//   int? count;
-//   List<RecoverySaleData>? data;
-//
-//   RecoverySaleModel({
-//     this.success,
-//     this.message,
-//     this.count,
-//     this.data,
-//   });
-//
-//   factory RecoverySaleModel.fromJson(Map<String, dynamic> json) {
-//     return RecoverySaleModel(
-//       success: json['success'],
-//       message: json['message'],
-//       count: json['count'],
-//       data: json['data'] != null
-//           ? List<RecoverySaleData>.from(
-//           json['data'].map((x) => RecoverySaleData.fromJson(x)))
-//           : [],
-//     );
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     return {
-//       "success": success,
-//       "message": message,
-//       "count": count,
-//       "data": data != null
-//           ? List<dynamic>.from(data!.map((x) => x.toJson()))
-//           : [],
-//     };
-//   }
-// }
-//
-// class RecoverySaleData {
-//   int? sr;
-//   String? date;
-//   String? id;
-//   String? customer;
-//   String? salesman;
-//   num? total;
-//   num? received;
-//   num? balance;
-//   int? billDays;
-//   int? dueDays;
-//   String? recoveryDate;
-//
-//   RecoverySaleData({
-//     this.sr,
-//     this.date,
-//     this.id,
-//     this.customer,
-//     this.salesman,
-//     this.total,
-//     this.received,
-//     this.balance,
-//     this.billDays,
-//     this.dueDays,
-//     this.recoveryDate,
-//   });
-//
-//   factory RecoverySaleData.fromJson(Map<String, dynamic> json) {
-//     return RecoverySaleData(
-//       sr: json['sr'],
-//       date: json['date'],
-//       id: json['id'],
-//       customer: json['customer'],
-//       salesman: json['salesman'],
-//       total: json['total'],
-//       received: json['received'],
-//       balance: json['balance'],
-//       billDays: json['billDays'],
-//       dueDays: json['dueDays'],
-//       recoveryDate: json['recoveryDate'],
-//     );
-//   }
-//
-//   Map<String, dynamic> toJson() {
-//     return {
-//       "sr": sr,
-//       "date": date,
-//       "id": id,
-//       "customer": customer,
-//       "salesman": salesman,
-//       "total": total,
-//       "received": received,
-//       "balance": balance,
-//       "billDays": billDays,
-//       "dueDays": dueDays,
-//       "recoveryDate": recoveryDate,
-//     };
-//   }
-// }
 class RecoveryReport {
-  bool? success;
-  int? count;
-  String? date;
-  List<RecoveryInvoice>? data;
+  final bool success;
+  final String message;
+  final RecoveryReportData data;
 
   RecoveryReport({
-    this.success,
-    this.count,
-    this.date,
-    this.data,
+    required this.success,
+    required this.message,
+    required this.data,
   });
 
   factory RecoveryReport.fromJson(Map<String, dynamic> json) {
     return RecoveryReport(
-      success: json['success'],
-      count: json['count'],
-      date: json['date'],
-      data: json['data'] != null
-          ? List<RecoveryInvoice>.from(
-          json['data'].map((x) => RecoveryInvoice.fromJson(x)))
-          : [],
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: RecoveryReportData.fromJson(json['data'] ?? {}),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "success": success,
-      "count": count,
-      "date": date,
-      "data": data != null
-          ? List<dynamic>.from(data!.map((x) => x.toJson()))
-          : [],
-    };
   }
 }
 
-class RecoveryInvoice {
-  String? invoiceId;
-  String? invoiceNo;
-  String? invoiceDate;
-  String? customer;
-  String? salesman;
-  int? billDays;
-  int? overDays;
-  String? agingDate;
-  String? status;
-  List<InvoiceItem>? items;
-  num? totalPrice;
-  num? receivable;
-  num? received;
-  num? balance;
-  String? recoveryId;
-  String? recoveryNo;
-  num? recoveryAmount;
+class RecoveryReportData {
+  final List<RecoveryVoucher> vouchers;
 
-  RecoveryInvoice({
-    this.invoiceId,
-    this.invoiceNo,
-    this.invoiceDate,
-    this.customer,
-    this.salesman,
-    this.billDays,
-    this.overDays,
-    this.agingDate,
-    this.status,
-    this.items,
-    this.totalPrice,
-    this.receivable,
-    this.received,
-    this.balance,
-    this.recoveryId,
-    this.recoveryNo,
-    this.recoveryAmount,
-  });
+  RecoveryReportData({required this.vouchers});
 
-  factory RecoveryInvoice.fromJson(Map<String, dynamic> json) {
-    return RecoveryInvoice(
-      invoiceId: json['invoiceId'],
-      invoiceNo: json['invoiceNo'],
-      invoiceDate: json['invoiceDate'],
-      customer: json['customer'],
-      salesman: json['salesman'],
-      billDays: json['billDays'],
-      overDays: json['overDays'],
-      agingDate: json['agingDate'],
-      status: json['status'],
-      items: json['items'] != null
-          ? List<InvoiceItem>.from(
-          json['items'].map((x) => InvoiceItem.fromJson(x)))
-          : [],
-      totalPrice: json['totalPrice'],
-      receivable: json['receivable'],
-      received: json['received'],
-      balance: json['balance'],
-      recoveryId: json['recoveryId'],
-      recoveryNo: json['recoveryNo'],
-      recoveryAmount: json['recoveryAmount'],
+  factory RecoveryReportData.fromJson(Map<String, dynamic> json) {
+    return RecoveryReportData(
+      vouchers: ((json['data']?['data'] ?? []) as List)
+          .map((e) => RecoveryVoucher.fromJson(e))
+          .toList(),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      "invoiceId": invoiceId,
-      "invoiceNo": invoiceNo,
-      "invoiceDate": invoiceDate,
-      "customer": customer,
-      "salesman": salesman,
-      "billDays": billDays,
-      "overDays": overDays,
-      "agingDate": agingDate,
-      "status": status,
-      "items": items != null
-          ? List<dynamic>.from(items!.map((x) => x.toJson()))
-          : [],
-      "totalPrice": totalPrice,
-      "receivable": receivable,
-      "received": received,
-      "balance": balance,
-      "recoveryId": recoveryId,
-      "recoveryNo": recoveryNo,
-      "recoveryAmount": recoveryAmount,
-    };
-  }
 }
 
-class InvoiceItem {
-  int? sr;
-  String? item;
-  num? rate;
-  num? qty;
-  num? total;
+class RecoveryVoucher {
+  final int id;
+  final String rvNo;
+  final int customerId;
+  final String customerName;
+  final int salesmanId;
+  final String salesmanName;
+  final DateTime recoveryDate;
+  final String mode;
+  final int? bankId;
+  final String? bankName;
+  final String? bankBranch;
+  final double amount;
+  final String? remarks;
+  final String status;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  InvoiceItem({
-    this.sr,
-    this.item,
-    this.rate,
-    this.qty,
-    this.total,
+  RecoveryVoucher({
+    required this.id,
+    required this.rvNo,
+    required this.customerId,
+    required this.customerName,
+    required this.salesmanId,
+    required this.salesmanName,
+    required this.recoveryDate,
+    required this.mode,
+    this.bankId,
+    this.bankName,
+    this.bankBranch,
+    required this.amount,
+    this.remarks,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
-  factory InvoiceItem.fromJson(Map<String, dynamic> json) {
-    return InvoiceItem(
-      sr: json['sr'],
-      item: json['item'],
-      rate: json['rate'],
-      qty: json['qty'],
-      total: json['total'],
+  factory RecoveryVoucher.fromJson(Map<String, dynamic> json) {
+    return RecoveryVoucher(
+      id: json['id'] ?? 0,
+      rvNo: json['rv_no'] ?? '',
+      customerId: json['customer_id'] ?? 0,
+      customerName: json['customer_name'] ?? '',
+      salesmanId: json['salesman_id'] ?? 0,
+      salesmanName: json['salesman_name'] ?? '',
+      recoveryDate: DateTime.parse(json['recovery_date']),
+      mode: json['mode'] ?? '',
+      bankId: json['bank_id'],
+      bankName: json['bank_name'],
+      bankBranch: json['bank_branch'],
+      amount: double.tryParse(json['amount'].toString()) ?? 0.0,
+      remarks: json['remarks'],
+      status: json['status'] ?? '',
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      "sr": sr,
-      "item": item,
-      "rate": rate,
-      "qty": qty,
-      "total": total,
-    };
   }
 }
