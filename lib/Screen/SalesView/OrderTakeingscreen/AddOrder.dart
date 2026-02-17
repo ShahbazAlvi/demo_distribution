@@ -183,9 +183,9 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("Purchase: ${selectedProduct!.purchasePrice}"),
+                  Text("SalePrice: ${selectedProduct!.salePrice}"),
                   //Text("Price: ${selectedProduct!.price}"),
-                  Text("Unit: ${selectedProduct!.unitId}"),
+
                   const SizedBox(height: 8),
 
                   TextField(

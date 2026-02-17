@@ -70,14 +70,14 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
               onPressed: () {
                 final provider = Provider.of<OrderTakingProvider>(context, listen: false);
 
-                String nextOrderId = "ORD-001"; // Default if no orders found
+                String nextOrderId = "SO-0001"; // Default if no orders found
 
                 // ✅ Check if data exists and not empty
                 if (provider.orderData != null && provider.orderData!.data.isNotEmpty) {
                   // ✅ Extract numeric parts from all order IDs
                   final allNumbers = provider.orderData!.data.map((order) {
                     final id = order.soNo?.toString() ?? "";
-                    final regex = RegExp(r'ORD-(\d+)$');
+                    final regex = RegExp(r'SO-(\d+)$');
                     final match = regex.firstMatch(id);
                     return match != null ? int.tryParse(match.group(1)!) ?? 0 : 0;
                   }).toList();
@@ -87,7 +87,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
 
                   // ✅ Generate the next order ID
                   final incremented = maxNumber + 1;
-                  nextOrderId = "ORD-${incremented.toString().padLeft(3, '0')}";
+                  nextOrderId = "SO-${incremented.toString().padLeft(4, '0')}";
                 }
 
                 print("✅ Last Max Order ID: $nextOrderId");

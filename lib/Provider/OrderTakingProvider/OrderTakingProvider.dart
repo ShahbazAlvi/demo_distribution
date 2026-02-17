@@ -8,6 +8,8 @@ import '../../ApiLink/ApiEndpoint.dart';
 import '../../model/OrderTakingModel/OrderTakingModel.dart';
 import 'package:http/http.dart'as http;
 
+import '../../model/SaleInvoiceModel/InvoiceOrderUpdate.dart';
+
 class OrderTakingProvider with ChangeNotifier{
   bool _isFetched = false;
   bool _isLoading = false;
@@ -93,18 +95,21 @@ class OrderTakingProvider with ChangeNotifier{
         return;
       }
 
-      final url = Uri.parse('${ApiEndpoints.baseUrl}/sales-order');
+      final url = Uri.parse('${ApiEndpoints.baseUrl}/sales-orders');
 
       final body = jsonEncode({
-        "orderId": orderId,
-        "salesmanId": salesmanId,
-        "customerId": customerId,
-        "products": products.map((item) => {
-          "itemId": item["product"].id,
-          "qty": item["qty"],
-          "rate": item["price"]
+        "so_no": orderId,
+        "salesman_id": int.parse(salesmanId),
+        "customer_id": int.parse(customerId),
+        "status": "DRAFT",
+        "order_date": DateTime.now().toIso8601String().split('T').first,
+        "details": products.map((item) => {
+          "item_id": int.parse(item["product"].id.toString()),
+          "qty": (item["qty"] as num).toDouble(),
+          "rate": (item["price"] as num).toDouble(),
         }).toList(),
       });
+
 
       final response = await http.post(
         url,
@@ -202,6 +207,92 @@ class OrderTakingProvider with ChangeNotifier{
       notifyListeners();
     }
   }
+
+
+  SingleOrderData? _selectedOrder;
+  SingleOrderData? get selectedOrder => _selectedOrder;
+
+  Future<void> fetchSingleOrder(int orderId) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token");
+
+      if (token == null) {
+        _error = "Token not found!";
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      final url = Uri.parse('${ApiEndpoints.baseUrl}/sales-orders/$orderId');
+      final response = await http.get(url, headers: {
+        "Accept": "application/json",
+        "Authorization": "Bearer $token",
+        "x-company-id": "2",
+      });
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        _selectedOrder = SingleOrderModel.fromJson(data).data;
+        _error = null;
+      } else {
+        _error = "Failed to fetch order (${response.statusCode})";
+      }
+    } catch (e) {
+      _error = "Error: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+// Function to update order (send edited details)
+  Future<void> updateSelectedOrder() async {
+    if (_selectedOrder == null) return;
+
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("token");
+
+      final url = Uri.parse("${ApiEndpoints.baseUrl}/sales-orders/${_selectedOrder!.id}");
+
+      // Map details
+      final details = _selectedOrder!.details.map((e) => {
+        "id": e.id,
+        "qty": e.qty,
+        "rate": e.rate,
+      }).toList();
+
+      final response = await http.put(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode({"details": details}),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("✅ Order updated successfully");
+        _error = null;
+        await fetchSingleOrder(_selectedOrder!.id); // refresh
+      } else {
+        _error = "Failed to update: ${response.statusCode}";
+      }
+    } catch (e) {
+      _error = "Error updating: $e";
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
 
 
 

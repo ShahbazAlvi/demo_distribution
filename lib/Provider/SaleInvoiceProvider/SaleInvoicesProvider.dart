@@ -12,6 +12,7 @@ class SaleInvoicesProvider with ChangeNotifier {
   bool isLoading = false;
   String? error;
   SaleInvoiceModel? orderData;
+
   String? token;
 
   // ✅ Load token from SharedPreferences
@@ -20,20 +21,26 @@ class SaleInvoicesProvider with ChangeNotifier {
     token = prefs.getString("token");
   }
 
-  // ✅ Fetch Orders (with filters)
+
+
+
+
   Future<void> fetchOrders({String? date, String? salesmanId}) async {
     try {
       isLoading = true;
       error = null;
       notifyListeners();
 
-      await loadToken(); // ✅ Load token before API call
+      await loadToken();
 
-      String url =
-          "${ApiEndpoints.baseUrl}/order-taker/pending";
+      if (token == null) {
+        error = "Token not found";
+        return;
+      }
+
+      String url = "${ApiEndpoints.baseUrl}/sales-invoices-notax";
 
       Map<String, String> params = {};
-
       if (date != null && date.isNotEmpty) params['date'] = date;
       if (salesmanId != null && salesmanId.isNotEmpty) {
         params['salesmanId'] = salesmanId;
@@ -43,13 +50,23 @@ class SaleInvoicesProvider with ChangeNotifier {
         url += "?" + Uri(queryParameters: params).query;
       }
 
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(
+        Uri.parse(url),
+        headers: {
+          "Authorization": "Bearer $token",
+          "Content-Type": "application/json",
+          "x-company-id": "2",
+          "Cache-Control": "no-cache",
+          "Pragma": "no-cache",
+        },
+      );
 
       if (response.statusCode == 200) {
         orderData = SaleInvoiceModel.fromJson(jsonDecode(response.body));
-      } else {
+      } else if (response.statusCode != 304) {
         error = "Server Error: ${response.statusCode}";
       }
+
     } catch (e) {
       error = "Exception: $e";
     }
@@ -58,119 +75,12 @@ class SaleInvoicesProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // ✅ Create Invoice / Update Invoice
-  // Future<void> createOrUpdateInvoice({
-  //   required SaleInvoiceData order,
-  //   required List<Map<String, dynamic>> products,
-  //   required int discount,
-  //   required int received,
-  //   required DateTime deliveryDate,
-  //   required DateTime agingDate,
-  // }) async {
-  //   try {
-  //     isLoading = true;
-  //     notifyListeners();
-  //
-  //     await loadToken();
-  //
-  //     int totalAmount = products.fold(
-  //       0,
-  //           (sum, item) => sum + ((item['rate'] as num) * (item['qty'] as num)).toInt(),
-  //     );
-  //
-  //
-  //     int receivable = totalAmount - discount;
-  //
-  //     final body = {
-  //       "invoiceDate": DateFormat('yyyy-MM-dd').format(order.date),
-  //       "customerId": order.customerId.id,
-  //       "salesmanId": order.salesmanId.id,
-  //       "orderTakingId": order.id,
-  //       "products": products, // ✅ ALL PRODUCTS
-  //       "totalAmount": totalAmount,
-  //       "receivable": receivable,
-  //       "received": received,
-  //       "deliveryDate": DateFormat('yyyy-MM-dd').format(deliveryDate),
-  //       "agingDate": DateFormat('yyyy-MM-dd').format(agingDate),
-  //       "status": "Pending"
-  //     };
-  //
-  //     final response = await http.post(
-  //       Uri.parse("https://distribution-backend.vercel.app/api/sales-invoice"),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer $token",
-  //       },
-  //       body: jsonEncode(body),
-  //     );
-  //
-  //     if (response.statusCode != 200 && response.statusCode != 201) {
-  //       error = "Failed: ${response.body}";
-  //     }
-  //   } catch (e) {
-  //     error = e.toString();
-  //   }
-  //
-  //   isLoading = false;
-  //   notifyListeners();
-  // }
-  Future<String?> createOrUpdateInvoice({
-    required SaleInvoiceData order,
-    required List<Map<String, dynamic>> products,
-    required int discount,
-    required int received,
-    required DateTime deliveryDate,
-    required DateTime agingDate,
-  }) async {
-    try {
-      isLoading = true;
-      notifyListeners();
 
-      await loadToken();
 
-      int totalAmount = products.fold(
-        0,
-            (sum, item) => sum + ((item['rate'] as num) * (item['qty'] as num)).toInt(),
-      );
 
-      int receivable = totalAmount - discount;
 
-      final body = {
-        "invoiceDate": DateFormat('yyyy-MM-dd').format(order.date),
-        "customerId": order.customerId.id,
-        "salesmanId": order.salesmanId!.id,
-        "orderTakingId": order.id,
-        "products": products,
-        "totalAmount": totalAmount,
-        "receivable": receivable,
-        "received": received,
-        "deliveryDate": DateFormat('yyyy-MM-dd').format(deliveryDate),
-        "agingDate": DateFormat('yyyy-MM-dd').format(agingDate),
-        "status": "Pending"
-      };
 
-      final response = await http.post(
-        Uri.parse("${ApiEndpoints.baseUrl}/sales-invoice"),
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        },
-        body: jsonEncode(body),
-      );
 
-      final data = jsonDecode(response.body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        return data["message"] ?? "Invoice Updated Successfully";
-      } else {
-        return data["message"] ?? "Failed to update invoice";
-      }
-    } catch (e) {
-      return "Error: $e";
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
-  }
 
 }
