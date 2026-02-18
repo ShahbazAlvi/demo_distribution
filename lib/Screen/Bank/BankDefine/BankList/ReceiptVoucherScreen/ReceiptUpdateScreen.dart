@@ -300,10 +300,10 @@ class _UpdateReceiptVoucherScreenState
       salesmanProvider.fetchEmployees();
 
       // Set selected Bank safely
-      if (bankProvider.bankList.isNotEmpty) {
-        selectedBank = bankProvider.bankList.firstWhere(
+      if (bankProvider.bankListModel.isNotEmpty) {
+        selectedBank = bankProvider.bankListModel.firstWhere(
               (b) => b.id == widget.voucher.bank?.id,
-          orElse: () => bankProvider.bankList[0],
+          orElse: () => bankProvider.bankListModel[0],
         );
       }
 
@@ -424,20 +424,20 @@ class _UpdateReceiptVoucherScreenState
                 ],
               ),
               child: DropdownButtonFormField<String>(
-                value: selectedBank?.id, // store only the ID
+                value: selectedBank?.id.toString(), // store only the ID
                 decoration: const InputDecoration(
                   labelText: "Select Bank",
                   border: InputBorder.none,
                 ),
-                items: bankProvider.bankList.map((bank) {
+                items: bankProvider.bankListModel.map((bank) {
                   return DropdownMenuItem<String>(
-                    value: bank.id,                     // dropdown value = bank.id
-                    child: Text("${bank.bankName} (${bank.accountHolderName})"),
+                    value: bank.id.toString(),                     // dropdown value = bank.id
+                    child: Text("${bank.name} (${bank.accountNo})"),
                   );
                 }).toList(),
                 onChanged: (val) {
                   setState(() {
-                    selectedBank = bankProvider.bankList.firstWhere((b) => b.id == val);
+                    selectedBank = bankProvider.bankListModel.firstWhere((b) => b.id == val);
                   });
                 },
               ),
@@ -506,7 +506,7 @@ class _UpdateReceiptVoucherScreenState
                     id: widget.voucher.id,
                     date: dateCtrl.text,
                     receiptId: widget.voucher.receiptId,
-                    bankId: selectedBank!.id,
+                    bankId: selectedBank!.id.toString(),
                     salesmanId: selectedSalesman!.id.toString(),
                     amount: int.parse(amountCtrl.text),
                     remarks: remarksCtrl.text,

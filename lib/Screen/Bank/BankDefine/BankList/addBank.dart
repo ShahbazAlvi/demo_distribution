@@ -62,7 +62,7 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
 
               const SizedBox(height: 10),
-              AppTextField(controller: holderC, label:"Account Holder",   validator: (v) => v!.isEmpty ? "Enter holder name" : null,),
+              AppTextField(controller: holderC, label:"Account Title",   validator: (v) => v!.isEmpty ? "Enter holder name" : null,),
 
 
               const SizedBox(height: 10),
@@ -71,7 +71,10 @@ class _AddBankScreenState extends State<AddBankScreen> {
 
 
               const SizedBox(height: 10),
-              AppTextField(controller:balanceC, label: "Balance",  validator: (v) => v!.isEmpty ? "Enter balance" : null,),
+              AppTextField(controller:balanceC, label: "Branch",  validator: (v) => v!.isEmpty ? "Enter balance" : null,),
+
+
+
 
 
 

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../Provider/CustomerLedgerProvider/LedgerProvider.dart';
 import '../../../../compoents/AppColors.dart';
 import '../../../../compoents/Customerdropdown.dart';
+import '../../../../model/CustomerModel/CustomersDefineModel.dart';
 
 class CustomerLedgerScreen extends StatefulWidget {
   const CustomerLedgerScreen({super.key});
@@ -14,11 +15,24 @@ class CustomerLedgerScreen extends StatefulWidget {
 }
 
 class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
-  String? selectedCustomerId;
+  CustomerData? selectedCustomer;
   DateTime? fromDate;
   DateTime? toDate;
 
   final dateFormat = DateFormat("yyyy-MM-dd");
+
+  /// 🔁 Call API safely
+  void loadLedger() {
+    if (selectedCustomer == null ||
+        fromDate == null ||
+        toDate == null) return;
+
+    context.read<CustomerLedgerProvider>().getLedger(
+      customerId: selectedCustomer!.id.toString(),
+      fromDate: dateFormat.format(fromDate!),
+      toDate: dateFormat.format(toDate!),
+    );
+  }
 
   Future<void> pickFromDate() async {
     final date = await showDatePicker(
@@ -30,15 +44,7 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
 
     if (date != null) {
       setState(() => fromDate = date);
-
-      if (selectedCustomerId != null && toDate != null) {
-        Provider.of<CustomerLedgerProvider>(context, listen: false)
-            .getLedger(
-          customerId: selectedCustomerId!,
-          fromDate: dateFormat.format(fromDate!),
-          toDate: dateFormat.format(toDate!),
-        );
-      }
+      loadLedger();
     }
   }
 
@@ -52,38 +58,27 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
 
     if (date != null) {
       setState(() => toDate = date);
-
-      if (selectedCustomerId != null && fromDate != null) {
-        Provider.of<CustomerLedgerProvider>(context, listen: false)
-            .getLedger(
-          customerId: selectedCustomerId!,
-          fromDate: dateFormat.format(fromDate!),
-          toDate: dateFormat.format(toDate!),
-        );
-      }
+      loadLedger();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<CustomerLedgerProvider>(context);
+    final provider = context.watch<CustomerLedgerProvider>();
 
     double totalCredit = 0;
     double totalDebit = 0;
 
     if (provider.ledgerData != null) {
-      for (var item in provider.ledgerData!.data) {
-        double received = double.tryParse(item.received) ?? 0;
-        double paid = double.tryParse(item.paid) ?? 0;
-
-        totalCredit += received;
-        totalDebit += paid;
+      for (var item in provider.ledgerData!.data.entries) {
+        totalCredit += item.credit;
+        totalDebit += item.debit;
       }
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Customer Ledger Details ",
+        title: const Text("Customer Ledger Details",
             style: TextStyle(color: Colors.white, fontSize: 22)),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -101,19 +96,15 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
+
             /// ✅ Customer Dropdown
-            // CustomerDropdown(
-            //   selectedCustomerId: selectedCustomerId,
-            //   onChanged: (customer) {
-            //     selectedCustomerId = customer?.id;
-            //
-            //     if (selectedCustomerId != null) {
-            //       Provider.of<CustomerLedgerProvider>(context, listen: false)
-            //           .getLedger(customerId: selectedCustomerId!);
-            //     }
-            //   },
-            //   showDetails: false,
-            // ),
+            CustomerDropdown(
+              selectedCustomerId: selectedCustomer?.id,
+              onChanged: (customer) {
+                setState(() => selectedCustomer = customer);
+                loadLedger();
+              },
+            ),
 
             const SizedBox(height: 15),
 
@@ -142,45 +133,37 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
 
             const SizedBox(height: 15),
 
-            /// ✅ Ledger Data UI
+            /// ✅ Ledger Data
             Expanded(
               child: provider.isLoading
                   ? const Center(child: CircularProgressIndicator())
                   : provider.error != null
-                  ? Center(
-                  child: Text(provider.error!,
-                      style: const TextStyle(color: Colors.red)))
+                  ? Center(child: Text(provider.error!))
                   : provider.ledgerData == null
-                  ? const Center(child: Text("Select customer"))
+                  ? const Center(child: Text("Select customer & date"))
                   : Column(
                 children: [
                   Expanded(
                     child: ListView.builder(
-                      itemCount:
-                      provider.ledgerData!.data.length,
+                      itemCount: provider.ledgerData!.data.entries.length,
                       itemBuilder: (context, index) {
-                        final item = provider
-                            .ledgerData!.data[index];
+                        final item = provider.ledgerData!.data.entries[index];
+
                         return Card(
                           child: ListTile(
-                            title: Text(item.description),
-                            subtitle: Text(item.date),
+                            title: Text(item.docNo),
+                            subtitle: Text(
+                                "${DateFormat("dd MMM yyyy").format(item.date)}\n${item.narration}"),
                             trailing: Column(
                               crossAxisAlignment:
                               CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                    "Debit: ${item.paid}",
-                                    style: const TextStyle(
-                                        color: Colors.red)),
-                                Text(
-                                    "Credit: ${item.received}",
-                                    style: const TextStyle(
-                                        color: Colors.green)),
-                                Text(
-                                    "Balance: ${item.balance}",
-                                    style: const TextStyle(
-                                        color: Colors.orange)),
+                                Text("Debit: ${item.debit}",
+                                    style: const TextStyle(color: Colors.red)),
+                                Text("Credit: ${item.credit}",
+                                    style: const TextStyle(color: Colors.green)),
+                                Text("Balance: ${item.balance}",
+                                    style: const TextStyle(color: Colors.orange)),
                               ],
                             ),
                           ),
@@ -189,29 +172,23 @@ class _CustomerLedgerScreenState extends State<CustomerLedgerScreen> {
                     ),
                   ),
 
-                  /// ✅ TOTALS SECTION
+                  /// ✅ Totals
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                         color: Colors.black12,
-                        borderRadius:
-                        BorderRadius.circular(10)),
+                        borderRadius: BorderRadius.circular(10)),
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        Text(
-                          "Total Debit: $totalDebit",
-                          style: const TextStyle(
-                              color: Colors.red,
-                              fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "Total Credit: $totalCredit",
-                          style: const TextStyle(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold),
-                        ),
+                        Text("Total Debit: $totalDebit",
+                            style: const TextStyle(
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold)),
+                        Text("Total Credit: $totalCredit",
+                            style: const TextStyle(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                   )

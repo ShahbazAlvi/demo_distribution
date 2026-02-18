@@ -328,9 +328,9 @@ class _UpdatePaymentVoucherScreenState
           selectedBankId = payment.bank?.id;
           selectedSupplierId = payment.supplier?.id;
 
-          final bank = bankP.bankList
+          final bank = bankP.bankListModel
               .firstWhere((b) => b.id == selectedBankId);
-          bankBalance = bank.balance.toString();
+          bankBalance = bank.name.toString();
 
           final supplier = supplierP.suppliers
               .firstWhere((s) => s.id == selectedSupplierId);
@@ -389,18 +389,18 @@ class _UpdatePaymentVoucherScreenState
                     border: OutlineInputBorder(),
                   ),
                   value: selectedBankId,
-                  items: bankP.bankList.map((b) {
+                  items: bankP.bankListModel.map((b) {
                     return DropdownMenuItem(
                       value: b.id,
-                      child: Text("${b.bankName} - ${b.accountHolderName}"),
+                      child: Text("${b.name} - ${b.accountNo}"),
                     );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedBankId = value;
-                      final bank = bankP.bankList
+                      selectedBankId = value as String?;
+                      final bank = bankP.bankListModel
                           .firstWhere((b) => b.id == value);
-                      bankBalance = bank.balance.toString();
+                      bankBalance = bank.name.toString();
                     });
                   },
                 );

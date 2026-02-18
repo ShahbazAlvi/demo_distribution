@@ -113,16 +113,16 @@ class _AddReceiptVoucherScreenState extends State<AddReceiptVoucherScreen> {
                   labelText: "Select Bank",
                   border: OutlineInputBorder(),
                 ),
-                items: bankProvider.bankList.map((bank) {
+                items: bankProvider.bankListModel.map((bank) {
                   return DropdownMenuItem(
                     value: bank,
-                    child: Text("${bank.bankName} - ${bank.accountHolderName}"),
+                    child: Text("${bank.name} - ${bank.accountNo}"),
                   );
                 }).toList(),
                 onChanged: (val) {
                   setState(() {
                     selectedBank = val;
-                    bankBalance = val?.balance.toString() ?? "0";
+                    bankBalance = val?.name.toString() ?? "0";
                   });
                 },
               ),
@@ -342,7 +342,7 @@ class _AddReceiptVoucherScreenState extends State<AddReceiptVoucherScreen> {
                     final success = await voucherProvider.addVoucher(
                       date: currentDate,
                       receiptId: widget.receiptId,
-                      bankId: selectedBank!.id,
+                      bankId: selectedBank!.id.toString(),
                       salesmanId: selectedSalesman!.id.toString(),
                       amount: enteredAmount,
                       remarks: remarkController.text,

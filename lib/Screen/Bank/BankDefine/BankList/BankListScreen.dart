@@ -83,14 +83,14 @@ class _BankListScreenState extends State<BankListScreen> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          if (provider.bankList.isEmpty) {
+          if (provider.bankListModel.isEmpty) {
             return const Center(child: Text("No banks found"));
           }
 
           return ListView.builder(
-            itemCount: provider.bankList.length,
+            itemCount: provider.bankListModel.length,
             itemBuilder: (context, index) {
-              final bank = provider.bankList[index];
+              final bank = provider.bankListModel[index];
 
               return Card(
                 margin: const EdgeInsets.all(12),
@@ -109,7 +109,7 @@ class _BankListScreenState extends State<BankListScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            bank.bankName,
+                            bank.name,
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
@@ -123,11 +123,11 @@ class _BankListScreenState extends State<BankListScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) => UpdateBankScreen(
-                                        id: bank.id,
-                                        bankName: bank.bankName,
-                                        holderName: bank.accountHolderName,
-                                        accountNo: bank.accountNumber,
-                                        balance: bank.balance,
+                                        id: bank.id.toString(),
+                                        bankName: bank.name,
+                                        holderName: bank.accountTitle,
+                                        accountNo: bank.accountNo,
+                                        balance: bank.branch.length,
                                       ),
                                     ),
                                   );
@@ -137,7 +137,7 @@ class _BankListScreenState extends State<BankListScreen> {
                               IconButton(
                                 icon: const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () {
-                                  _showDeleteDialog(context, provider, bank.id);
+                                  _showDeleteDialog(context, provider, bank.id.toString());
                                 },
                               ),
 
@@ -148,13 +148,13 @@ class _BankListScreenState extends State<BankListScreen> {
 
                       const SizedBox(height: 8),
 
-                      Text("Account Holder: ${bank.accountHolderName}"),
-                      Text("Account No: ${bank.accountNumber}"),
+                      Text("Account Holder: ${bank.accountTitle}"),
+                      Text("Account No: ${bank.accountNo}"),
 
                       const SizedBox(height: 6),
 
                       Text(
-                        "Balance: Rs. ${bank.balance}",
+                        "Balance: Rs. ${bank.accountTitle}",
                         style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

@@ -27,10 +27,10 @@ class BankDropdown extends StatelessWidget {
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
           ),
-          items: provider.bankList.map((bank) {
+          items: provider.bankListModel.map((bank) {
             return DropdownMenuItem(
               value: bank,
-              child: Text(bank.bankName),
+              child: Text(bank.name),
             );
           }).toList(),
           onChanged: onChanged,

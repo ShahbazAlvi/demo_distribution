@@ -15,10 +15,10 @@ class CustomerLedgerService {
     required String token,
   }) async {
 
-    String urlString = "$baseUrl?customer=$customerId";
+    String urlString = "$baseUrl?customer_id=$customerId";
 
     if (fromDate != null && toDate != null) {
-      urlString += "&from=$fromDate&to=$toDate";
+      urlString += "&date_from=$fromDate&date_to=$toDate";
     }
 
     final url = Uri.parse(urlString);
@@ -31,11 +31,16 @@ class CustomerLedgerService {
       },
     );
 
+    print("Ledger URL: $urlString");
+    print("Ledger Response: ${response.body}");
+
     if (response.statusCode == 200) {
-      return CustomerLedgerDetailsModel.fromJson(json.decode(response.body));
+      return CustomerLedgerDetailsModel.fromJson(
+        json.decode(response.body),
+      );
     }
 
     throw Exception("Ledger error: ${response.body}");
   }
-
 }
+

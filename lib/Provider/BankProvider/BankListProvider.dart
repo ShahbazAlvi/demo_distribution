@@ -10,7 +10,7 @@ import '../../model/BankModel/BankListModel.dart';
 
 class BankProvider extends ChangeNotifier {
   bool loading = false;
-  List<BankData> bankList = [];
+  List<BankData> bankListModel = [];
 
   Future<void> fetchBanks() async {
     loading = true;
@@ -26,9 +26,11 @@ class BankProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
+        final jsonData = json.decode(response.body);
         final model = BankListModel.fromJson(jsonData);
-        bankList = model.data;
+        bankListModel = model.banks;
+
+
       }
     } catch (e) {
       print("Error: $e");
@@ -48,7 +50,7 @@ class BankProvider extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        bankList.removeWhere((bank) => bank.id == id);
+        bankListModel.removeWhere((bank) => bank.id.toString() == id);
         notifyListeners();
       }
     } catch (e) {
@@ -63,10 +65,11 @@ class BankProvider extends ChangeNotifier {
       ) async {
 
     final body = jsonEncode({
-      "bankName": bankName,
-      "accountHolderName": holderName,
-      "accountNumber": accountNo,
-      "balance": int.parse(balance),
+      "name": bankName,
+      "account_no": accountNo,
+      "account_title": holderName,
+      "branch": balance,
+      "is_active":1,
     });
 
     try {

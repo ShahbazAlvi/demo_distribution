@@ -25,13 +25,13 @@ class RecoveryReportData {
 
   factory RecoveryReportData.fromJson(Map<String, dynamic> json) {
     return RecoveryReportData(
-      vouchers: ((json['data']?['data'] ?? []) as List)
+      vouchers: (json['data'] as List? ?? [])
           .map((e) => RecoveryVoucher.fromJson(e))
           .toList(),
     );
   }
-
 }
+
 
 class RecoveryVoucher {
   final int id;

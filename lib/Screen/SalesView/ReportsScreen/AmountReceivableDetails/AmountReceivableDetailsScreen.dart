@@ -5,9 +5,21 @@ import '../../../../Provider/AmountReceivableDetailsProvider/AmountReceivableDet
 import '../../../../compoents/AppColors.dart';
 
 
-class ReceivableScreen extends StatelessWidget {
+class ReceivableScreen extends StatefulWidget {
   const ReceivableScreen({super.key});
 
+  @override
+  State<ReceivableScreen> createState() => _ReceivableScreenState();
+}
+
+class _ReceivableScreenState extends State<ReceivableScreen> {
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      context.read<ReceivableProvider>().fetchReceivables();
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,16 +42,6 @@ class ReceivableScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
-
-            // ✅ Radio Buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _radioItem(context, true, "With Zero"),
-                const SizedBox(width: 20),
-                _radioItem(context, false, "Without Zero"),
-              ],
-            ),
 
             const SizedBox(height: 10),
 
@@ -79,10 +81,10 @@ class ReceivableScreen extends StatelessWidget {
 
                       return Card(
                         child: ListTile(
-                          title: Text(item.customer),
+                          title: Text(item.customerName),
                           subtitle: Text('Balance: ${item.balance}'),
                           leading: CircleAvatar(
-                            child: Text(item.sr.toString()),
+                            child: Text(item.status.toString()),
                           ),
                         ),
                       );

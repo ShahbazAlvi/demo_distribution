@@ -104,4 +104,61 @@ class RecoveryProvider extends ChangeNotifier {
     }
   }
 
+
+  Future<String?> addRecovery({
+    required String orderId,
+    required String salesmanId,
+    required String customerId,
+    required String bankId,
+    required String amount,
+    required String recoveryDate, // Pass date in "YYYY-MM-DD"
+    required String mode,         // e.g., "BANK"
+  }) async {
+    await loadToken();
+
+    try {
+      isLoading = true;
+      notifyListeners();
+
+      final url = Uri.parse("$baseUrl/recovery-vouchers");
+
+      final body = jsonEncode({
+        "rv_no": orderId,
+        "salesman_id": int.parse(salesmanId),
+        "customer_id": int.parse(customerId),
+        "bank_id": int.parse(bankId),
+        "amount": double.parse(amount),
+        "recovery_date": recoveryDate,
+        "mode": mode,
+        "status": "DRAFT",
+      });
+
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: body,
+      );
+
+      print("Add Recovery Response: ${response.body}");
+
+      isLoading = false;
+      notifyListeners();
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final jsonData = jsonDecode(response.body);
+        return jsonData["message"] ?? "Recovery added successfully";
+      } else {
+        return "Failed to add recovery: ${response.statusCode}";
+      }
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      return "Error: $e";
+    }
+  }
+
+
 }

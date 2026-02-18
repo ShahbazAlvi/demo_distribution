@@ -89,19 +89,19 @@ class _AddPaymentVoucherScreenState extends State<AddPaymentVoucherScreen> {
                     labelText: "Select Bank",
                     border: OutlineInputBorder(),
                   ),
-                  items: bankP.bankList.map((b) {
+                  items: bankP.bankListModel.map((b) {
                     return DropdownMenuItem(
                       value: b.id,
-                      child: Text("${b.bankName}-${b.accountHolderName}"),
+                      child: Text("${b.name}-${b.accountNo}"),
                     );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedBankId = value;
+                      selectedBankId = value as String?;
 
-                      final bank = bankP.bankList.firstWhere((b) => b.id == value);
+                      final bank = bankP.bankListModel.firstWhere((b) => b.id == value);
 
-                      bankBalance = bank.balance.toString();
+                      bankBalance = bank.name.toString();
                     });
                   },
 
