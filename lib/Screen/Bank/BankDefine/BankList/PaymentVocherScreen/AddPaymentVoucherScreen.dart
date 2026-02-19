@@ -150,7 +150,7 @@ class _AddPaymentVoucherScreenState extends State<AddPaymentVoucherScreen> {
                   items: supplierP.suppliers.map((s) {
                     return DropdownMenuItem(
                       value: s.id,
-                      child: Text(s.supplierName),
+                      child: Text(s.name),
                     );
                   }).toList(),
                   // onChanged: (value) {
@@ -158,11 +158,11 @@ class _AddPaymentVoucherScreenState extends State<AddPaymentVoucherScreen> {
                   // },
                   onChanged: (value) {
                     setState(() {
-                      selectedSupplierId = value;
+                      selectedSupplierId = value.toString();
 
                       final supplier = supplierP.suppliers.firstWhere((s) => s.id == value);
 
-                      supplierBalance = supplier.payableBalance.toString(); // <-- supplier balance
+                      supplierBalance = supplier.openingBalance.toString(); // <-- supplier balance
                     });
                   },
                 );

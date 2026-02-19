@@ -86,15 +86,15 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ListTile(
-                  title: Text(data.supplierName,
+                  title: Text(data.name,
                       style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("Email: ${data.email}"),
-                      Text("Phone: ${data.contactNumber}"),
                       Text("Address: ${data.address}"),
-                      Text("Payment: ${data.paymentTerms}"),
+                      Text("Address: ${data.phone}"),
+                      Text("Payment: ${data.openingBalance}"),
                     ],
                   ),
                   trailing: Row(
@@ -134,7 +134,7 @@ class _SupplierListScreenState extends State<SupplierListScreen> {
                                   child: const Text("Yes", style: TextStyle(color: Colors.red)),
                                   onPressed: () async {
                                     Navigator.pop(context); // close popup
-                                    provider.deleteSupplier(data.id); // delete supplier
+                                    provider.deleteSupplier(data.id.toString()); // delete supplier
                                   },
                                 ),
                               ],

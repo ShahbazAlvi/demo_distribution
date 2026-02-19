@@ -16,14 +16,16 @@ class SupplierApi {
 
     if (response.statusCode == 200) {
       final body = jsonDecode(response.body);
-      print(body);
-      return (body as List)
-          .map((e) => SupplierModel.fromJson(e))
-          .toList();
+
+      final List suppliersJson = body["data"]["data"] ?? [];
+      print("Suppliers JSON: $suppliersJson");
+
+      return suppliersJson.map((e) => SupplierModel.fromJson(e)).toList();
     } else {
       throw Exception("Failed to load suppliers");
     }
   }
+
 
   /// ✅ Delete Supplier
 

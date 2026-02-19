@@ -58,53 +58,11 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
               SizedBox(height: 10,),
               AppTextField(controller: provider.addressController, label: "Address", validator: validator),
               SizedBox(height: 10,),
-              Text("Payment Terms"),
-              Row(
-                children: [
-                  Expanded(
-                    child: RadioListTile(
-                      title: Text("Credit"),
-                        value: "credit",
-                              groupValue: paymentType,
-                              activeColor: AppColors.secondary,
-                              onChanged: (value) {
-                                setState(() {
-                                  paymentType = value.toString();
-                                });
-                              }),
-                  ),
-                                Expanded(
-                                child: RadioListTile(
-                                title: Text("Cash"),
-                                value: "cash",
-                                groupValue: paymentType,
-                                activeColor: AppColors.secondary,
-                                onChanged: (value) {
-                                  setState(() {
-                                    paymentType = value.toString();
-                                  });
-                                }),
-                                )
-        
-                ],
-              ),
+              AppTextField(controller: provider.balanceController, label: "opening balance", validator: validator),
+
               SizedBox(height: 10,),
         
-              if (paymentType == "credit") ...[
-                const SizedBox(height: 10),
-                AppTextField(
-                  controller: provider.creditDaysController,
-                  label: "Credit Days Limit",
-                  validator: (v) => null,
-                ),
-                const SizedBox(height: 10),
-        
-                AppTextField(
-                  controller: provider.creditLimitController,
-                  label: "Credit Cash Limit",
-                  validator: (v) => null,
-                ),
-              ],
+
         
               SizedBox(height: 20,),
               AppButton(
@@ -122,9 +80,7 @@ class _AddSupplierScreenState extends State<AddSupplierScreen> {
                   if (provider.addressController.text.isEmpty) {
                     return showMessage("Address is required");
                   }
-                  if (paymentType.isEmpty) {
-                    return showMessage("Please select Payment Terms");
-                  }
+
         
                   /// Call Add API
                   bool success = await provider.addSupplier(

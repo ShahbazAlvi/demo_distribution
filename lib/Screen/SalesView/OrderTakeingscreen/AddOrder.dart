@@ -35,6 +35,15 @@ class AddOrderScreen extends StatefulWidget {
 class _AddOrderScreenState extends State<AddOrderScreen> {
   late String currentDate;
   bool isLoading = false;
+  String selectedStatus = "DRAFT";
+
+  final List<String> orderStatusList = [
+    "DRAFT",
+    "APPROVED",
+    "CLOSED",
+    "CANCELLED",
+  ];
+
 
 
   String? selectedSalesmanId;
@@ -164,6 +173,39 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                 setState(() => selectedCustomer = customer);
               },
             ),
+
+
+            const SizedBox(height: 20),
+
+            Text(
+              "Order Status",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 5),
+// status
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+              ),
+              child: DropdownButton<String>(
+                value: selectedStatus,
+                isExpanded: true,
+                underline: const SizedBox(),
+                items: orderStatusList.map((status) {
+                  return DropdownMenuItem(
+                    value: status,
+                    child: Text(status),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() => selectedStatus = value!);
+                },
+              ),
+            ),
+
 
 
 
@@ -488,6 +530,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                     orderId: widget.nextOrderId,
                     salesmanId: selectedSalesmanId!,
                     customerId: selectedCustomer!.id.toString(),
+                    status: selectedStatus,
                     products: orderItems,
                   );
 

@@ -55,8 +55,8 @@ class _SupplierDropdownState extends State<SupplierDropdown> {
           ),
           items: provider.suppliers.map((SupplierModel supplier) {
             return DropdownMenuItem<String>(
-              value: supplier.id,
-              child: Text(supplier.supplierName),
+              value: supplier.id.toString(),
+              child: Text(supplier.name),
             );
           }).toList(),
           onChanged: (value) {

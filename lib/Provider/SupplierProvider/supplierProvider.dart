@@ -18,8 +18,7 @@ class SupplierProvider extends ChangeNotifier {
   final TextEditingController emailController=TextEditingController();
   final TextEditingController contactController=TextEditingController();
   final TextEditingController addressController=TextEditingController();
-  final TextEditingController creditDaysController=TextEditingController();
-  final TextEditingController creditLimitController=TextEditingController();
+  final TextEditingController balanceController=TextEditingController();
 
 
 
@@ -47,59 +46,59 @@ class SupplierProvider extends ChangeNotifier {
 
   // Update  the Supplier
 
-  Future<bool> updateSupplier({
-    required String id,
-    required String name,
-    required String email,
-    required String phone,
-    required String address,
-    required String paymentTerms,
-  }) async {
-    bool success = await SupplierApi.updateSupplier(
-      id: id,
-      name: name,
-      email: email,
-      phone: phone,
-      address: address,
-      paymentTerms: paymentTerms,
-    );
-
-    if (success) {
-      int index = suppliers.indexWhere((e) => e.id == id);
-      if (index != -1) {
-        suppliers[index] = SupplierModel(
-          id: id,
-          supplierName: name,
-          email: email,
-          contactNumber: phone,
-          phoneNumber: phone,        // ← REQUIRED
-          address: address,
-          paymentTerms: paymentTerms,
-
-          contactPerson: suppliers[index].contactPerson,
-          mobileNumber: suppliers[index].mobileNumber,
-          designation: suppliers[index].designation,
-          ntn: suppliers[index].ntn,
-          gst: suppliers[index].gst,
-          creditLimit: suppliers[index].creditLimit,
-          creditTime: suppliers[index].creditTime,
-          status: suppliers[index].status,
-          payableBalance: suppliers[index].payableBalance,
-          createdAt: suppliers[index].createdAt,
-          updatedAt: suppliers[index].updatedAt,
-          invoiceNo: suppliers[index].invoiceNo,
-         // contactNumber: suppliers[index].contactNumber,
-        );
-
-      }
-
-      notifyListeners();
-    }
-
-    return success;  // 👈 Return bool here
-  }
-
-
+  // Future<bool> updateSupplier({
+  //   required String id,
+  //   required String name,
+  //   required String email,
+  //   required String phone,
+  //   required String address,
+  //   required String paymentTerms,
+  // }) async {
+  //   bool success = await SupplierApi.updateSupplier(
+  //     id: id,
+  //     name: name,
+  //     email: email,
+  //     phone: phone,
+  //     address: address,
+  //     paymentTerms: paymentTerms,
+  //   );
+  //
+  //   if (success) {
+  //     int index = suppliers.indexWhere((e) => e.id == id);
+  //     if (index != -1) {
+  //       suppliers[index] = SupplierModel(
+  //         : id,
+  //         name: name,
+  //         email: email,
+  //         phone: phone,
+  //              // ← REQUIRED
+  //         address: address,
+  //         openingBalance: paymentTerms,
+  //
+  //         contactPerson: suppliers[index].contactPerson,
+  //         mobileNumber: suppliers[index].mobileNumber,
+  //         designation: suppliers[index].designation,
+  //         ntn: suppliers[index].ntn,
+  //         gst: suppliers[index].gst,
+  //         creditLimit: suppliers[index].creditLimit,
+  //         creditTime: suppliers[index].creditTime,
+  //         status: suppliers[index].status,
+  //         payableBalance: suppliers[index].payableBalance,
+  //         createdAt: suppliers[index].createdAt,
+  //         updatedAt: suppliers[index].updatedAt,
+  //         invoiceNo: suppliers[index].invoiceNo,
+  //        // contactNumber: suppliers[index].contactNumber,
+  //       );
+  //
+  //     }
+  //
+  //     notifyListeners();
+  //   }
+  //
+  //   return success;  // 👈 Return bool here
+  // }
+  //
+  //
 
   // add  the Supplier
 
@@ -122,14 +121,12 @@ class SupplierProvider extends ChangeNotifier {
     final url = Uri.parse("${ApiEndpoints.baseUrl}/suppliers");
 
     final body = {
-      "supplierName": nameController.text.trim(),
+      "name": nameController.text.trim(),
       "email": emailController.text.trim(),
       "address": addressController.text.trim(),
       "contactNumber": contactController.text.trim(),  // <-- fixed
-      "paymentTerms": paymentType == "credit" ? "Credit" : "Cash",
-      "creditTime": creditDaysController.text.trim(),
-      "creditLimit": creditLimitController.text.trim(),
-      "status":"true"
+
+      "is_active":1
     };
 
     print("SEND BODY => $body");

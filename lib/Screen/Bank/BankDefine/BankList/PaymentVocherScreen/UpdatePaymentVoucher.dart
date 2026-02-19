@@ -334,7 +334,7 @@ class _UpdatePaymentVoucherScreenState
 
           final supplier = supplierP.suppliers
               .firstWhere((s) => s.id == selectedSupplierId);
-          supplierBalance = supplier.payableBalance.toString();
+          supplierBalance = supplier.openingBalance.toString();
 
           amountController.text =
               payment.amount.toString().replaceAll(".0", "");
@@ -429,17 +429,17 @@ class _UpdatePaymentVoucherScreenState
                   items: supplierP.suppliers.map((s) {
                     return DropdownMenuItem(
                       value: s.id,
-                      child: Text(s.supplierName),
+                      child: Text(s.name),
                     );
                   }).toList(),
                   onChanged: (value) {
                     setState(() {
-                      selectedSupplierId = value;
+                      selectedSupplierId = value.toString();
 
                       final supplier = supplierP.suppliers
                           .firstWhere((s) => s.id == value);
 
-                      supplierBalance = supplier.payableBalance.toString();
+                      supplierBalance = supplier.openingBalance.toString();
                     });
                   },
                 );

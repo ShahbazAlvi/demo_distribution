@@ -272,13 +272,13 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                                     children: [
                                       ElevatedButton(
                                         onPressed: () {
-                                          // Navigator.push(
-                                          //   context,
-                                          //   MaterialPageRoute(
-                                          //     builder: (context) =>
-                                          //         UpdateOrderScreen(order: order),
-                                          //   ),
-                                          // );
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateOrderScreen(order: order),
+                                            ),
+                                          );
                                         },
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: AppColors.betprologo,

@@ -25,16 +25,11 @@ class _UpdateSupplierScreenState extends State<UpdateSupplierScreen> {
     final provider = Provider.of<SupplierProvider>(context, listen: false);
 
     // Pre-fill existing supplier data
-    provider.nameController.text = widget.supplier.supplierName;
+    provider.nameController.text = widget.supplier.name;
     provider.emailController.text = widget.supplier.email;
-    provider.contactController.text = widget.supplier.contactNumber;
+    provider.contactController.text = widget.supplier.phone;
     provider.addressController.text = widget.supplier.address;
-    provider.creditDaysController.text = widget.supplier.creditTime.toString();
-    provider.creditLimitController.text = widget.supplier.creditLimit.toString();
 
-    paymentType = widget.supplier.paymentTerms.toLowerCase() == "credit"
-        ? "credit"
-        : "cash";
   }
 
   @override
@@ -129,58 +124,45 @@ class _UpdateSupplierScreenState extends State<UpdateSupplierScreen> {
                 ],
               ),
 
-              if (paymentType == "credit") ...[
-                AppTextField(
-                  controller: provider.creditDaysController,
-                  label: "Credit Days Limit",
-                  validator: (v) => null,
-                ),
-                const SizedBox(height: 10),
 
-                AppTextField(
-                  controller: provider.creditLimitController,
-                  label: "Credit Cash Limit",
-                  validator: (v) => null,
-                ),
-              ],
 
               const SizedBox(height: 20),
 
-              AppButton(
-                title: "Update Supplier",
-                width: double.infinity,
-                press: () async {
-                  if (provider.nameController.text.isEmpty) {
-                    return showMessage("Supplier Name is required");
-                  }
-                  if (provider.emailController.text.isEmpty) {
-                    return showMessage("Email is required");
-                  }
-                  if (provider.contactController.text.isEmpty) {
-                    return showMessage("Contact Number is required");
-                  }
-                  if (provider.addressController.text.isEmpty) {
-                    return showMessage("Address is required");
-                  }
-
-                  bool success = await provider.updateSupplier(
-                    id: widget.supplier.id,
-                    name: provider.nameController.text.trim(),
-                    email: provider.emailController.text.trim(),
-                    phone: provider.contactController.text.trim(),
-                    address: provider.addressController.text.trim(),
-                    paymentTerms: paymentType == "credit" ? "Credit" : "Cash",
-                  );
-
-                  if (success) {
-                    showMessage("Supplier Updated Successfully");
-                    Navigator.pop(context);
-                  } else {
-                    showMessage("Error updating supplier");
-                  }
-                },
-
-              ),
+              // AppButton(
+              //   title: "Update Supplier",
+              //   width: double.infinity,
+              //   press: () async {
+              //     if (provider.nameController.text.isEmpty) {
+              //       return showMessage("Supplier Name is required");
+              //     }
+              //     if (provider.emailController.text.isEmpty) {
+              //       return showMessage("Email is required");
+              //     }
+              //     if (provider.contactController.text.isEmpty) {
+              //       return showMessage("Contact Number is required");
+              //     }
+              //     if (provider.addressController.text.isEmpty) {
+              //       return showMessage("Address is required");
+              //     }
+              //
+              //     bool success = await provider.updateSupplier(
+              //       id: widget.supplier.id.toString(),
+              //       name: provider.nameController.text.trim(),
+              //       email: provider.emailController.text.trim(),
+              //       phone: provider.contactController.text.trim(),
+              //       address: provider.addressController.text.trim(),
+              //       paymentTerms: paymentType == "credit" ? "Credit" : "Cash",
+              //     );
+              //
+              //     if (success) {
+              //       showMessage("Supplier Updated Successfully");
+              //       Navigator.pop(context);
+              //     } else {
+              //       showMessage("Error updating supplier");
+              //     }
+              //   },
+              //
+              // ),
             ],
           ),
         ),

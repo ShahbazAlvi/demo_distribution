@@ -79,7 +79,7 @@ class OrderTakingProvider with ChangeNotifier{
     required String orderId,
     required String salesmanId,
     required String customerId,
-    required List<Map<String, dynamic>> products,
+    required List<Map<String, dynamic>> products, required String status,
   }) async {
     try {
       _isLoading = true;
@@ -101,7 +101,7 @@ class OrderTakingProvider with ChangeNotifier{
         "so_no": orderId,
         "salesman_id": int.parse(salesmanId),
         "customer_id": int.parse(customerId),
-        "status": "DRAFT",
+        "status": status,
         "order_date": DateTime.now().toIso8601String().split('T').first,
         "details": products.map((item) => {
           "item_id": int.parse(item["product"].id.toString()),
@@ -147,7 +147,7 @@ class OrderTakingProvider with ChangeNotifier{
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("token");
 
-      final url = Uri.parse("${ApiEndpoints.baseUrl}/order-taker/$orderId");
+      final url = Uri.parse("${ApiEndpoints.baseUrl}/sales-orders/$orderId");
 
       final response = await http.delete(
         url,

@@ -1,315 +1,247 @@
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:provider/provider.dart';
-//
-// import '../../../Provider/OrderTakingProvider/OrderTakingProvider.dart';
-// import '../../../Provider/SaleManProvider/SaleManProvider.dart';
-// import '../../../compoents/AppColors.dart';
-// import '../../../compoents/Customerdropdown.dart';
-// import '../../../compoents/ProductDropdown.dart';
-// import '../../../compoents/SaleManDropdown.dart';
-//
-// import '../../../model/CustomerModel/CustomerModel.dart';
-// import '../../../model/OrderTakingModel/OrderTakingModel.dart';
-// import '../../../model/ProductModel/itemsdetailsModel.dart';
-//
-// class UpdateOrderScreen extends StatefulWidget {
-//   final OrderData order;
-//
-//   const UpdateOrderScreen({super.key, required this.order});
-//
-//   @override
-//   State<UpdateOrderScreen> createState() => _UpdateOrderScreenState();
-// }
-//
-// class _UpdateOrderScreenState extends State<UpdateOrderScreen> {
-//   String? selectedSalesmanId;
-//   CustomerModel? selectedCustomer;
-//   ItemDetails? selectedProduct;
-//   bool isLoading = false;
-//
-//
-//   final TextEditingController qtyController = TextEditingController();
-//   final TextEditingController rateController = TextEditingController();
-//
-//
-//   List<Map<String, dynamic>> orderItems = [];
-//   late String currentDate;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//
-//     currentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
-//
-//     /// Load Existing Order into UI
-//     _loadExistingOrder();
-//
-//     Future.microtask(() {
-//       Provider.of<SaleManProvider>(context, listen: false).fetchSalesmen();
-//     });
-//   }
-//
-//   void _loadExistingOrder() {
-//     final order = widget.order;
-//
-//     selectedSalesmanId = order.salesmanId?.id;
-//
-//     selectedCustomer = CustomerModel(
-//       id: order.customerId!.id,
-//       customerName: order.customerId!.customerName,
-//       address: order.customerId!.address,
-//       phoneNumber: order.customerId!.phoneNumber,
-//       creditTime: order.customerId!.creditTime,
-//       salesBalance: order.customerId!.salesBalance,
-//       timeLimit: order.customerId!.timeLimit.toString(),
-//       formattedTimeLimit: order.customerId!.timeLimit.toString(),
-//     );
-//
-//     for (var p in order.products) {
-//       orderItems.add({
-//         "itemName": p.itemName,
-//         "qty": p.qty.toDouble(),
-//         "itemUnit": p.itemUnit,
-//         //"purchase": p.purchase.toDouble(),
-//         "rate": double.tryParse(p.rate.toString()) ?? 0.0,
-//        // "rate": p.rate.toDouble(),
-//         "totalAmount": p.totalAmount.toDouble(),
-//       });
-//     }
-//   }
-//
-//   void addProductToOrder() {
-//     if (selectedProduct != null && qtyController.text.isNotEmpty) {
-//       final qty = double.tryParse(qtyController.text) ?? 0;
-//       final rate = double.tryParse(rateController.text) ?? 0;
-//       //final total = selectedProduct!.price * qty;
-//       final total = qty * rate;
-//
-//       setState(() {
-//         orderItems.add({
-//           "itemName": selectedProduct!.name,
-//           "qty": qty,
-//          // "itemUnit": selectedProduct!.itemUnit?.unitName ?? "",
-//          // "rate": selectedProduct!.price.toDouble(),
-//           "rate": rate,
-//           //"purchase": selectedProduct!.purchase.toDouble(),
-//           "totalAmount": total,
-//         });
-//       });
-//
-//       qtyController.clear();
-//       rateController.clear();
-//       selectedProduct = null;
-//     }
-//   }
-//
-//   Future<void> updateOrder() async {
-//     if (selectedSalesmanId == null ||
-//         selectedCustomer == null ||
-//         orderItems.isEmpty) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text("Please complete all fields")),
-//       );
-//       return;
-//     }
-//
-//     setState(() => isLoading = true);
-//
-//     final provider = Provider.of<OrderTakingProvider>(context, listen: false);
-//
-//     final body = {
-//       "orderId": widget.order.orderId,
-//       "salesmanId": selectedSalesmanId,
-//       "customerId": selectedCustomer!.id,
-//       "products": orderItems.map((p) {
-//         return {
-//           "itemName": p["itemName"],
-//           "qty": p["qty"],
-//           "itemUnit": p["itemUnit"],
-//           "purchase": p["purchase"],
-//           "rate": p["rate"],
-//           "totalAmount": p["totalAmount"],
-//         };
-//       }).toList(),
-//     };
-//
-//     await provider.updateOrder(widget.order.id, body);
-//
-//     setState(() => isLoading = false);
-//
-//     Navigator.pop(context);
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       const SnackBar(content: Text("Order Updated Successfully")),
-//     );
-//   }
-//
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     final order = widget.order;
-//
-//     return ChangeNotifierProvider(
-//       create: (_) => SaleManProvider()..fetchEmployees(),
-//       child: Scaffold(
-//         backgroundColor: Color(0xFFEEEEEE),
-//         appBar: AppBar(
-//           iconTheme: const IconThemeData(color: Colors.white),
-//           title: const Text(
-//             "Update Order",
-//             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-//           ),
-//           centerTitle: true,
-//           elevation: 6,
-//           flexibleSpace: Container(
-//             decoration: const BoxDecoration(
-//               gradient: LinearGradient(
-//                 colors: [AppColors.secondary, AppColors.primary],
-//                 begin: Alignment.topLeft,
-//                 end: Alignment.bottomRight,
-//               ),
-//             ),
-//           ),
-//         ),
-//
-//         body: SingleChildScrollView(
-//           padding: const EdgeInsets.all(16),
-//           child: Column(
-//             children: [
-//               /// TOP INFO
-//               Row(
-//                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                 children: [
-//                   Text("Order ID: ${order.orderId}"),
-//                   Text("Date: $currentDate"),
-//                 ],
-//               ),
-//               const SizedBox(height: 20),
-//               const Divider(),
-//
-//               /// SALESMAN
-//               SalesmanDropdown(
-//                 selectedId: selectedSalesmanId,
-//                 onChanged: (value) {
-//                   setState(() => selectedSalesmanId = value);
-//                 },
-//               ),
-//
-//               const SizedBox(height: 25),
-//
-//               /// CUSTOMER
-//               CustomerDropdown(
-//                 selectedCustomerId: selectedCustomer?.id,
-//                 onChanged: (customer) {
-//                   setState(() => selectedCustomer = customer);
-//                 },
-//               ),
-//
-//               const SizedBox(height: 25),
-//
-//               /// PRODUCT SELECTOR
-//               ItemDetailsDropdown(
-//                 onItemSelected: (item) {
-//                   setState(() => selectedProduct = item);
-//                 },
-//               ),
-//
-//               const SizedBox(height: 10),
-//
-//               /// QTY + ADD PRODUCT
-//               if (selectedProduct != null)
-//                 Column(
-//                   crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: [
-//                     Text("Purchase: ${selectedProduct!.purchasePrice}"),
-//                     Text("Unit: ${selectedProduct!.unitId}"),
-//                     const SizedBox(height: 10),
-//
-//                     TextField(
-//                       controller: qtyController,
-//                       keyboardType: TextInputType.number,
-//                       decoration: const InputDecoration(
-//                         labelText: "Enter Quantity",
-//                         border: OutlineInputBorder(),
-//                       ),
-//                     ),
-//                     const SizedBox(height: 10),
-//
-//                     /// RATE FIELD (NEW)
-//                     TextField(
-//                       controller: rateController,
-//                       keyboardType: TextInputType.number,
-//                       decoration: const InputDecoration(
-//                         labelText: "Enter Rate",
-//                         border: OutlineInputBorder(),
-//                       ),
-//                     ),
-//
-//                     const SizedBox(height: 10),
-//                     ElevatedButton.icon(
-//                       onPressed: addProductToOrder,
-//                       icon: const Icon(Icons.add),
-//                       label: const Text("Add Product"),
-//                     )
-//                   ],
-//                 ),
-//
-//               const SizedBox(height: 20),
-//
-//               /// PRODUCT LIST
-//               ...orderItems.map((item) {
-//                 return Card(
-//                   elevation: 3,
-//                   shape:
-//                   RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-//                   margin: const EdgeInsets.symmetric(vertical: 6),
-//                   child: ListTile(
-//                     title: Text(item["itemName"]),
-//                     subtitle: Text(
-//                         "${item["qty"]} ${item["itemUnit"]} × ${item["rate"]}  =  Rs. ${item["totalAmount"]}"),
-//                     trailing: IconButton(
-//                       icon: const Icon(Icons.delete, color: Colors.red),
-//                       onPressed: () {
-//                         setState(() => orderItems.remove(item));
-//                       },
-//                     ),
-//                   ),
-//                 );
-//               }),
-//
-//               const SizedBox(height: 20),
-//
-//               /// UPDATE ORDER BUTTON
-//               ElevatedButton(
-//                 onPressed: isLoading ? null : updateOrder,
-//                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: AppColors.secondary,
-//                   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 35),
-//                   shape: RoundedRectangleBorder(
-//                     borderRadius: BorderRadius.circular(12),
-//                   ),
-//                 ),
-//                 child: isLoading
-//                     ? const SizedBox(
-//                   height: 24,
-//                   width: 24,
-//                   child: CircularProgressIndicator(
-//                     color: Colors.white,
-//                     strokeWidth: 1,
-//                   ),
-//                 )
-//                     : const Text(
-//                   "Update Order",
-//                   style: TextStyle(color: Colors.white, fontSize: 18),
-//                 ),
-//               ),
-//
-//
-//               const SizedBox(height: 30),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+
+import '../../../Provider/OrderTakingProvider/OrderTakingProvider.dart';
+import '../../../compoents/AppColors.dart';
+import '../../../model/OrderTakingModel/OrderTakingModel.dart';
+
+class UpdateOrderScreen extends StatefulWidget {
+  final OrderData order;
+
+  const UpdateOrderScreen({super.key, required this.order});
+
+  @override
+  State<UpdateOrderScreen> createState() => _UpdateOrderScreenState();
+}
+
+class _UpdateOrderScreenState extends State<UpdateOrderScreen> {
+  late TextEditingController soController;
+  late TextEditingController dateController;
+  late TextEditingController statusController;
+
+  int? selectedCustomerId;
+  int? selectedSalesmanId;
+
+  List<Map<String, dynamic>> orderItems = [];
+
+  bool isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    soController = TextEditingController(text: widget.order.soNo);
+    dateController = TextEditingController(
+      text: DateFormat('yyyy-MM-dd').format(widget.order.orderDate),
+    );
+    statusController = TextEditingController(text: widget.order.status);
+
+    selectedCustomerId = widget.order.customerId;
+    selectedSalesmanId = widget.order.salesmanId;
+
+    // Load existing order items (replace with API if needed)
+    orderItems = [
+      {"item_id": 7, "qty": 1, "rate": 100},
+    ];
+  }
+
+  Future<void> updateOrder() async {
+    setState(() => isLoading = true);
+
+    final url = Uri.parse(
+        "https://api.distribution.afaqmis.com/api/sales-orders/${widget.order.id}");
+
+    final body = {
+      "so_no": soController.text,
+      "customer_id": selectedCustomerId,
+      "salesman_id": selectedSalesmanId,
+      "order_date": dateController.text,
+      "status": statusController.text,
+      "details": orderItems,
+    };
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization":
+          "Bearer YOUR_TOKEN_HERE", // 👉 Replace with actual token
+          "x-company-id": "2"
+        },
+        body: jsonEncode(body),
+      );
+
+      print("UPDATE RESPONSE: ${response.body}");
+
+      if (response.statusCode == 200) {
+        if (!mounted) return;
+
+        Provider.of<OrderTakingProvider>(context, listen: false)
+            .FetchOrderTaking();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Order Updated Successfully")),
+        );
+
+        Navigator.pop(context);
+      } else {
+        throw Exception("Update failed");
+      }
+    } catch (e) {
+      print("ERROR: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Update Failed")),
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  Future<void> pickDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: widget.order.orderDate,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+
+    if (picked != null) {
+      dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<OrderTakingProvider>(context);
+
+// Get unique customer and salesman lists
+    final customers = <Map<String, dynamic>>[];
+    final customerIds = <int>{};
+    for (var order in provider.orderData?.data ?? []) {
+      if (!customerIds.contains(order.customerId)) {
+        customerIds.add(order.customerId);
+        customers.add({"id": order.customerId, "name": order.customerName});
+      }
+    }
+
+    final salesmen = <Map<String, dynamic>>[];
+    final salesmanIds = <int>{};
+    for (var order in provider.orderData?.data ?? []) {
+      if (!salesmanIds.contains(order.salesmanId)) {
+        salesmanIds.add(order.salesmanId);
+        salesmen.add({"id": order.salesmanId, "name": order.salesmanName});
+      }
+    }
+
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Update Order"),
+        backgroundColor: AppColors.primary,
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            // Order Number
+            TextField(
+              controller: soController,
+              decoration: const InputDecoration(
+                labelText: "Order Number",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Customer Dropdown
+            DropdownButtonFormField<int>(
+              value: selectedCustomerId,
+              items: customers.map((customer) {
+                return DropdownMenuItem(
+                  value: customer["id"] as int,
+                  child: Text(customer["name"] as String),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() => selectedCustomerId = value);
+              },
+              decoration: const InputDecoration(
+                labelText: "Customer",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Salesman Dropdown
+            DropdownButtonFormField<int>(
+              value: selectedSalesmanId,
+              items: salesmen.map((salesman) {
+                return DropdownMenuItem(
+                  value: salesman["id"] as int,
+                  child: Text(salesman["name"] as String),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() => selectedSalesmanId = value);
+              },
+              decoration: const InputDecoration(
+                labelText: "Salesman",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Order Date
+            TextField(
+              controller: dateController,
+              readOnly: true,
+              onTap: pickDate,
+              decoration: const InputDecoration(
+                labelText: "Order Date",
+                border: OutlineInputBorder(),
+                suffixIcon: Icon(Icons.calendar_today),
+              ),
+            ),
+            const SizedBox(height: 15),
+
+            // Status
+            TextField(
+              controller: statusController,
+              decoration: const InputDecoration(
+                labelText: "Status",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 25),
+
+            // Update Button
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: updateOrder,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.secondary,
+                ),
+                child: const Text(
+                  "Update Order",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.text,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
