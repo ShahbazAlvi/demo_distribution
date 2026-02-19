@@ -9,6 +9,7 @@ import 'ItemWisePurchase/ItemWisePurchaseScreen.dart';
 import 'ItemWisePurchaseScreen/ItemWisePurchaseScreen.dart';
 import 'PayableAmountScreen/PayableAmountScreen.dart';
 import 'Payment_Supplier_Screen/PaymentSupplierScreen.dart';
+import 'PurchaseOrder/PurchaseOrder.dart';
 import 'StockPositionScreen/StockPositionScreen.dart';
 import 'SupplierLedgerScreen/SupplierLedgerScreen.dart';
 import 'SupplierWisePurchaseScreen/SupplierWisePurchaseScreen.dart';
@@ -84,6 +85,14 @@ class PurchaseDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (context)=>GRNScreen()));
                   },
                 ),
+                DashboardCard(
+                  icon: Icons.receipt_long_rounded,
+                  title: "Purchase Order",
+                  color: Colors.tealAccent,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>PurchaseOrderScreen()));
+                  },
+                ),
                 // DashboardCard(
                 //   icon: Icons.attach_money_rounded,
                 //   title: "Payment to Supplier",
@@ -93,6 +102,7 @@ class PurchaseDashboard extends StatelessWidget {
                 //   },
                 // ),
               ]),
+
 
               const SizedBox(height: 30),
 
