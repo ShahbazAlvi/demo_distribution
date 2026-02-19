@@ -44,6 +44,7 @@ class DailySaleReportProvider extends ChangeNotifier {
 
       if (response.statusCode == 200) {
         final jsonBody = jsonDecode(response.body);
+        print(jsonBody);
         reportData = DailySaleReportModel.fromJson(jsonBody);
       } else {
         reportData = null;

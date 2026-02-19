@@ -10,20 +10,25 @@ class SaleInvoiceModel {
   });
 
   factory SaleInvoiceModel.fromJson(Map<String, dynamic> json) {
+    final invoiceList = json["data"]?["data"] as List? ?? [];
+
     return SaleInvoiceModel(
       success: json["success"] ?? false,
       message: json["message"] ?? "",
-      invoices: (json["data"]["data"] as List)
+      invoices: invoiceList
           .map((e) => SaleInvoiceData.fromJson(e))
           .toList(),
     );
   }
+
 }
 
 class SaleInvoiceData {
   final int id;
-  final int salesOrderId;
-  final String salesOrderNo;
+
+  final int? salesOrderId;        // ✅ nullable
+  final String? salesOrderNo;     // ✅ nullable
+
   final String invNo;
 
   final int customerId;
@@ -56,8 +61,8 @@ class SaleInvoiceData {
 
   SaleInvoiceData({
     required this.id,
-    required this.salesOrderId,
-    required this.salesOrderNo,
+    this.salesOrderId,
+    this.salesOrderNo,
     required this.invNo,
     required this.customerId,
     required this.customerName,
@@ -81,31 +86,43 @@ class SaleInvoiceData {
 
   factory SaleInvoiceData.fromJson(Map<String, dynamic> json) {
     return SaleInvoiceData(
-      id: json["id"],
-      salesOrderId: json["sales_order_id"],
+      id: json["id"] ?? 0,
+      salesOrderId: json["sales_order_id"],       // ✅ no crash
       salesOrderNo: json["sales_order_no"],
-      invNo: json["inv_no"],
-      customerId: json["customer_id"],
-      customerName: json["customer_name"],
-      salesmanId: json["salesman_id"],
-      salesmanName: json["salesman_name"],
+
+      invNo: json["inv_no"] ?? "",
+
+      customerId: json["customer_id"] ?? 0,
+      customerName: json["customer_name"] ?? "",
+
+      salesmanId: json["salesman_id"] ?? 0,
+      salesmanName: json["salesman_name"] ?? "",
+
       loadId: json["load_id"],
       loadNo: json["load_no"],
-      invoiceDate: DateTime.parse(json["invoice_date"]),
-      locationId: json["location_id"],
-      locationName: json["location_name"],
-      invoiceType: json["invoice_type"],
+
+      invoiceDate: DateTime.tryParse(json["invoice_date"] ?? "") ?? DateTime.now(),
+
+      locationId: json["location_id"] ?? 0,
+      locationName: json["location_name"] ?? "",
+
+      invoiceType: json["invoice_type"] ?? "",
+
       grossTotal: _toDouble(json["gross_total"]),
       netTotal: _toDouble(json["net_total"]),
-      status: json["status"],
+
+      status: json["status"] ?? "",
       remarks: json["remarks"],
-      createdAt: DateTime.parse(json["created_at"]),
-      updatedAt: DateTime.parse(json["updated_at"]),
-      totalItems: json["total_items"],
+
+      createdAt: DateTime.tryParse(json["created_at"] ?? "") ?? DateTime.now(),
+      updatedAt: DateTime.tryParse(json["updated_at"] ?? "") ?? DateTime.now(),
+
+      totalItems: json["total_items"] ?? 0,
       totalQty: _toDouble(json["total_qty"]),
     );
   }
 }
+
 
 double _toDouble(dynamic value) {
   if (value == null) return 0.0;
