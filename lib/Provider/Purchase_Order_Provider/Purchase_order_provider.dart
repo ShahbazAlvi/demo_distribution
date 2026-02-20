@@ -51,6 +51,34 @@ Future<void>fetchPurchaseOrder()async{
   notifyListeners();
 }
 
+Future<void>AddPurchaseOrder(
+  {
+    required String orderid,
+    required String Supplierid,
+    required String status,
+    required List<Map<String, dynamic>> products,
+}
+    )async{
+  try{
+  _isLoading =true;
+  _error='';
+  notifyListeners();
+  final prefs= await SharedPreferences.getInstance();
+  final token=prefs.getString("token");
+  if(token == null){
+    _error='token is null again login';
+    _isLoading = false;
+    return;
+  }
+  final response=await http.post(Uri.parse('${ApiEndpoints.baseUrl}/purchase-orders'));
+
+  }catch(e){
+
+  }
+
+
+}
+
 
 
 }

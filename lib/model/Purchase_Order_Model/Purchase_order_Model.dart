@@ -29,18 +29,18 @@ class PurchaseOrder {
 
   factory PurchaseOrder.fromJson(Map<String, dynamic> json) {
     return PurchaseOrder(
-      id: json['id'],
-      poNo: json['po_no'],
-      supplierId: json['supplier_id'],
-      supplierName: json['supplier_name'],
+      id: json['id'] ?? 0,
+      poNo: json['po_no'] ?? '',
+      supplierId: json['supplier_id'] ?? 0,
+      supplierName: json['supplier_name'] ?? '',
       poDate: DateTime.parse(json['po_date']),
-      status: json['status'],
+      status: json['status'] ?? '',
       remarks: json['remarks'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      totalItems: json['total_items'],
-      totalQty: json['total_qty'],
-      totalAmount: json['total_amount'],
+      totalItems: json['total_items'] ?? 0,
+      totalQty: json['total_qty'].toString(),
+      totalAmount: json['total_amount'].toString(),
     );
   }
 

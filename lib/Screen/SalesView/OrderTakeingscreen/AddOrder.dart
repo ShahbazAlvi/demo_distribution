@@ -1117,7 +1117,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        '₹${selectedProduct!.salePrice?.toStringAsFixed(2) ?? '0.00'}',
+                        'Rs${selectedProduct!.salePrice?.toStringAsFixed(2) ?? '0.00'}',
                         style: TextStyle(
                           color: Colors.green.shade700,
                           fontWeight: FontWeight.w600,
@@ -1145,7 +1145,7 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
               Expanded(
                 child: _buildInputField(
                   controller: rateController,
-                  label: 'Rate (₹)',
+                  label: 'Rate (Rs)',
                   icon: Icons.currency_rupee,
                 ),
               ),
