@@ -95,7 +95,6 @@ bool get isLoading=>_isLoading;
   // Customers add
   Future<bool> addCustomer({
     required BuildContext context,
-    required String salesmanId,
     required String paymentType,
     required String openingBalanceDate,
   }) async {
@@ -113,16 +112,16 @@ bool get isLoading=>_isLoading;
     final url = Uri.parse("${ApiEndpoints.baseUrl}/customers");
 
     final body = {
-      "salesArea": AreaNameController.text.trim(),
-      "customerName": CustomerNameController.text.trim(),
+      "sales_area_id": 3,//AreaNameController.text.trim(),
+      "name": CustomerNameController.text.trim(),
       "address": AddressController.text.trim(),
-      "phoneNumber": ContactNumberController.text.trim(),  // <-- fixed
-      "openingBalanceDate": openingBalanceDate,
+      "phone": ContactNumberController.text.trim(),  // <-- fixed
+      //"openingBalance": openingBalanceDate,
       "paymentTerms": paymentType == "credit" ? "Credit" : "Cash",
-      "creditTime": int.tryParse(CreditDaysLimitController.text) ?? 0,
-      "creditLimit": int.tryParse(CreditCashLimitController.text) ?? 0,
-      "salesBalance": int.tryParse(OpeningBalanceController.text) ?? 0, // <-- matches backend
-      "salesman": salesmanId,
+      "aging_days": int.tryParse(CreditDaysLimitController.text) ?? 0,
+      "credit_limit": int.tryParse(CreditCashLimitController.text) ?? 0,
+      "opening_balance": int.tryParse(OpeningBalanceController.text) ?? 0,
+      "is_active":1// <-- matches backend
     };
 
     print("SEND BODY => $body"); // DEBUG PRINT

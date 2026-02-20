@@ -52,8 +52,8 @@ class _CategoriesDropdownState extends State<CategoriesDropdown> {
               hint: Text(widget.label),
               items: provider.categories.map((CategoriesModel category) {
                 return DropdownMenuItem<String>(
-                  value: category.id,
-                  child: Text(category.categoryName ?? ''),
+                  value: category.id.toString(),
+                  child: Text(category.name ?? ''),
                 );
               }).toList(),
               onChanged: (value) {

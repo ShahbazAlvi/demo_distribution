@@ -1,22 +1,25 @@
 class CategoriesModel {
-  final String? id;
-  final String? categoryName;
-  final bool? isEnable;
+  final int? id;
+  final String? name;
+  final bool? isActive;
   final String? createdAt;
+  final String? updatedAt;
 
   CategoriesModel({
     this.id,
-    this.categoryName,
-    this.isEnable,
+    this.name,
+    this.isActive,
     this.createdAt,
+    this.updatedAt,
   });
 
   factory CategoriesModel.fromJson(Map<String, dynamic> json) {
     return CategoriesModel(
-      id: json['_id'],
-      categoryName: json['categoryName'],
-      isEnable: json['isEnable'],
-      createdAt: json['createdAt'],
+      id: json['id'],
+      name: json['name'],
+      isActive: json['is_active'] == 1 || json['is_active'] == true,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 }

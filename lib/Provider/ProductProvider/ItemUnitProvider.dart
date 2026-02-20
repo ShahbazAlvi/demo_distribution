@@ -22,18 +22,27 @@ class ItemUnitProvider extends ChangeNotifier {
     loading = true;
     notifyListeners();
 
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+
     try {
       final response = await http.get(
-        Uri.parse('${ApiEndpoints.baseUrl}/item-unit'),
+        Uri.parse('${ApiEndpoints.baseUrl}/units'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer your_token_here', // optional if required
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        List data = json.decode(response.body);
-        units = data.map((e) => ItemUnitModel.fromJson(e)).toList();
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        final List list = jsonData['data']['data']; // ✅ correct path
+
+        units = list
+            .map((e) => ItemUnitModel.fromJson(e))
+            .toList();
+
       } else {
         debugPrint("Failed to load item units: ${response.body}");
       }
@@ -125,9 +134,9 @@ class ItemUnitProvider extends ChangeNotifier {
         final index = units.indexWhere((unit) => unit.id == id);
         if (index != -1) {
           units[index] = ItemUnitModel(
-            id: id,
-            unitName: unitName,
-            description: description,
+            // id: id,
+            // unitName: unitName,
+            // description: description,
             // Add other fields if needed
           );
           notifyListeners();

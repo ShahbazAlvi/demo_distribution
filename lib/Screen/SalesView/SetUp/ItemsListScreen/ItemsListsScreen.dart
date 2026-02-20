@@ -44,14 +44,14 @@ class _ItemListScreenState extends State<ItemListScreen> {
             child:ElevatedButton.icon(
               onPressed: () {
                 final provider = Provider.of<ItemDetailsProvider>(context, listen: false);
-                //final nextItemId = provider.getNextItemId();
+               // final nextItemId = provider.getNextItemId();
 
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //     builder: (context) => AddItemScreen(nextItemId: nextItemId),
-                //   ),
-                // );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AddItemScreen(nextItemId: ''),
+                  ),
+                );
                 Provider.of<ItemDetailsProvider>(context, listen: false).fetchItems();
               },
               icon: Icon(Icons.add_circle_outline, color: Colors.white),

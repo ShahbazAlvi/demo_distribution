@@ -16,7 +16,10 @@ class CategoriesProvider extends ChangeNotifier {
 
   Future<void> fetchCategories() async {
     loading = true;
-    //notifyListeners();
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
 
     final url = Uri.parse('${ApiEndpoints.baseUrl}/categories');
 
@@ -25,19 +28,18 @@ class CategoriesProvider extends ChangeNotifier {
         url,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer YOUR_TOKEN_HERE', // Replace with actual token
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        if (data is List) {
-          _categories = data.map((e) => CategoriesModel.fromJson(e)).toList();
-        } else if (data['data'] != null) {
-          _categories = (data['data'] as List)
-              .map((e) => CategoriesModel.fromJson(e))
-              .toList();
-        }
+        final Map<String, dynamic> jsonData = json.decode(response.body);
+
+        final List list = jsonData['data']['data']; // 👈 correct path
+
+        _categories = list
+            .map((e) => CategoriesModel.fromJson(e))
+            .toList();
       } else {
         debugPrint("Failed: ${response.statusCode}");
       }
@@ -139,9 +141,9 @@ class CategoriesProvider extends ChangeNotifier {
         final index = _categories.indexWhere((cat) => cat.id == id);
         if (index != -1) {
           _categories[index] = CategoriesModel(
-            id: id,
-            categoryName: name,
-            isEnable: isEnable,
+            // id: id,
+            // categoryName: name,
+            // isEnable: isEnable,
             createdAt: _categories[index].createdAt,
           );
           notifyListeners();

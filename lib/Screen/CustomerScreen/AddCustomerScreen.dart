@@ -18,7 +18,6 @@ class AddCustomerScreen extends StatefulWidget {
 
 class _AddCustomerScreenState extends State<AddCustomerScreen> {
   String? Function(dynamic value) get validator => (value) => null;
-  String? selectedSalesmanId;
   String paymentType = "credit";
   String? selectedDate;
   @override
@@ -68,15 +67,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
             children: [
               AppTextField(controller: provider.AreaNameController, label: "Area Name", validator: validator),
               SizedBox(height: 10,),
-              Text("Select Salesman",style: TextStyle(fontWeight:FontWeight.bold),),
-              SizedBox(height: 5,),
-              SalesmanDropdown(
-                selectedId: selectedSalesmanId,
-                onChanged: (value) {
-                  setState(() => selectedSalesmanId = value);
-                },
-              ),
-              SizedBox(height: 10,),
               AppTextField(controller: provider.CustomerNameController, label: "Customer Name", validator: validator),
               SizedBox(height: 10,),
               AppTextField(controller: provider.ContactNumberController, label: "Contact Number", validator: validator),
@@ -84,36 +74,7 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               AppTextField(controller: provider.AddressController, label: "Address", validator: validator),
               SizedBox(height: 10,),
               AppTextField(controller: provider.OpeningBalanceController, label: "Opening Balance", validator: validator),
-              SizedBox(height: 10,),
-              GestureDetector(
-                onTap: () async {
-                  DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2030),
-                  );
 
-                  if (picked != null) {
-                    selectedDate = DateFormat('yyyy-MM-dd').format(picked);
-                    setState(() {});
-                  }
-                },
-                child: Container(
-                  padding: EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.grey.shade200,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(selectedDate ?? "Select Date"),
-                      Icon(Icons.calendar_today),
-                    ],
-                  ),
-                ),
-              ),
 
               SizedBox(height: 10,),
               Text("Payment Terms"),
@@ -159,12 +120,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               AppButton(
                 title: provider.isLoading?"Loading...": "Save Customer",
                 press: () async {
-                  if (selectedSalesmanId == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Please select salesman")),
-                    );
-                    return;
-                  }
 
                   if (selectedDate == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -175,7 +130,6 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
 
                   final success = await provider.addCustomer(
                     context: context,
-                    salesmanId: selectedSalesmanId!,
                     paymentType: paymentType,
                     openingBalanceDate: selectedDate!,
                   );

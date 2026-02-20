@@ -81,8 +81,8 @@ class ItemTypeDropdown extends StatelessWidget {
       value: selectedId,
       items: provider.itemTypes.map((item) {
         return DropdownMenuItem<String>(
-          value: item.id,
-          child: Text(item.itemTypeName ?? "Unknown"),
+          value: item.id.toString(),
+          child: Text(item.name ?? "Unknown"),
         );
       }).toList(),
       onChanged: (value) {

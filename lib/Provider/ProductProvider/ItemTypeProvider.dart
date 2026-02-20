@@ -23,27 +23,30 @@ class ItemTypeProvider extends ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    final url = Uri.parse('${ApiEndpoints.baseUrl}/item-type');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token");
+
+    final url = Uri.parse('${ApiEndpoints.baseUrl}/item-types');
 
     try {
       final response = await http.get(
         url,
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': 'Bearer YOUR_TOKEN_HERE' // if required later
+          'Authorization': 'Bearer $token',
         },
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final Map<String, dynamic> jsonData = json.decode(response.body);
 
-        if (data is List) {
-          _itemTypes = data.map((e) => ItemTypeModel.fromJson(e)).toList();
-        } else if (data['data'] != null) {
-          _itemTypes = (data['data'] as List)
-              .map((e) => ItemTypeModel.fromJson(e))
-              .toList();
-        }
+        // ✅ correct nested list extraction
+        final List list = jsonData['data']['data'];
+
+        _itemTypes = list
+            .map((e) => ItemTypeModel.fromJson(e))
+            .toList();
+
       } else {
         debugPrint("Failed to load item types: ${response.statusCode}");
       }
@@ -137,10 +140,10 @@ class ItemTypeProvider extends ChangeNotifier {
         final index = _itemTypes.indexWhere((item) => item.id == id);
         if (index != -1) {
           _itemTypes[index] = ItemTypeModel(
-            id: id,
-            itemTypeName: itemTypeName,
-            isEnable: isEnable,
-            category: _itemTypes[index].category, // Keep existing category object
+            // id: id,
+            // itemTypeName: itemTypeName,
+            // isEnable: isEnable,
+            // category: _itemTypes[index].category, // Keep existing category object
             createdAt: _itemTypes[index].createdAt,
             updatedAt: DateTime.now().toIso8601String(),
           );

@@ -25,27 +25,7 @@ class SaleManProvider with ChangeNotifier {
   String? get error => _error;
 
   final TextEditingController nameController=TextEditingController();
-  final TextEditingController departmentController=TextEditingController();
-  final TextEditingController addressController=TextEditingController();
-  final TextEditingController cityController=TextEditingController();
   final TextEditingController phoneController=TextEditingController();
-  final TextEditingController nicController=TextEditingController();
-  final TextEditingController qualificationController=TextEditingController();
-  final TextEditingController bloodController=TextEditingController();
-  //String gender = "";
-  DateTime? dateOfBirth;
-  void setGender(String value) {
-    gender = value; // no lowercase
-    notifyListeners();
-  }
-
-
-  //
-
-  void setDateOfBirth(DateTime date) {
-    dateOfBirth = date;
-    notifyListeners();
-  }
 
   Future<void> fetchSalesmen() async {
     _isLoading = true;
@@ -167,24 +147,14 @@ class SaleManProvider with ChangeNotifier {
       );
       return;
     }
-    final url = Uri.parse("${ApiEndpoints.baseUrl}/employees");
+    final url = Uri.parse("${ApiEndpoints.baseUrl}/salesmen");
 
     try {
 
       final body = {
-        "departmentName": departmentController.text.trim(),
-        "employeeName": nameController.text.trim(),
-        "address": addressController.text.trim(),
-        "city": cityController.text.trim(),
-        "gender": gender,// now lowercase
-        "mobile": phoneController.text.trim(),
-        "nicNo": nicController.text.trim(),
-        "dob": dateOfBirth != null
-            ? DateFormat('yyyy-MM-dd').format(dateOfBirth!)
-            : "",
-        "qualification": qualificationController.text.trim(),
-        "bloodGroup": bloodController.text.trim(),
-        "isEnable": true
+        "name": nameController.text.trim(),
+        "phone": phoneController.text.trim(),
+        "is_active": 1
       };
 
 
@@ -234,15 +204,8 @@ class SaleManProvider with ChangeNotifier {
 
   void clearFields() {
     nameController.clear();
-    departmentController.clear();
-    addressController.clear();
-    cityController.clear();
     phoneController.clear();
-    nicController.clear();
-    qualificationController.clear();
-    bloodController.clear();
     gender = "";
-    dateOfBirth = null;
     notifyListeners();
   }
   Future<void> updateEmployee(String id, BuildContext context) async {
@@ -259,18 +222,11 @@ class SaleManProvider with ChangeNotifier {
     final url = Uri.parse("${ApiEndpoints.baseUrl}/employees/$id");
 
     final body = {
-      "departmentName": departmentController.text.trim(),
+
       "employeeName": nameController.text.trim(),
-      "address": addressController.text.trim(),
-      "city": cityController.text.trim(),
-      "gender": gender,
       "mobile": phoneController.text.trim(),
-      "nicNo": nicController.text.trim(),
-      "dob": dateOfBirth != null
-          ? DateFormat('yyyy-MM-dd').format(dateOfBirth!)
-          : "",
-      "qualification": qualificationController.text.trim(),
-      "bloodGroup": bloodController.text.trim(),
+
+
       "isEnable": true
     };
 
@@ -313,15 +269,7 @@ class SaleManProvider with ChangeNotifier {
   }
   void resetFields() {
     nameController.clear();
-    departmentController.clear();
-    addressController.clear();
-    cityController.clear();
     phoneController.clear();
-    nicController.clear();
-    qualificationController.clear();
-    bloodController.clear();
-    gender = "";
-    dateOfBirth = null;
     notifyListeners();
   }
 

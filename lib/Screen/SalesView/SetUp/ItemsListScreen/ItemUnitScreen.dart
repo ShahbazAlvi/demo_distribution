@@ -169,10 +169,10 @@ class _ItemUnitScreenState extends State<ItemUnitScreen> {
                     child: const Icon(Icons.settings, color: Colors.blue),
                   ),
                   title: Text(
-                    unit.unitName ?? "-",
+                    unit.name ?? "-",
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(unit.description ?? "-"),
+                  subtitle: Text(unit.shortName ?? "-"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -184,7 +184,7 @@ class _ItemUnitScreenState extends State<ItemUnitScreen> {
                       IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          _showDeleteConfirmationDialog(context, unit.id!, provider);
+                          _showDeleteConfirmationDialog(context, unit.id.toString()!, provider);
                         },
                       ),
                     ],
@@ -227,8 +227,8 @@ class _ItemUnitScreenState extends State<ItemUnitScreen> {
 
   // In your ItemUnitScreen, add this method inside _ItemUnitScreenState
   void _showEditUnitDialog(ItemUnitModel unit) async {
-    final TextEditingController unitNameCtrl = TextEditingController(text: unit.unitName ?? '');
-    final TextEditingController descCtrl = TextEditingController(text: unit.description ?? '');
+    final TextEditingController unitNameCtrl = TextEditingController(text: unit.name ?? '');
+    final TextEditingController descCtrl = TextEditingController(text: unit.shortName ?? '');
 
     showDialog(
       context: context,
@@ -275,7 +275,7 @@ class _ItemUnitScreenState extends State<ItemUnitScreen> {
               if (token == null) return;
 
               await Provider.of<ItemUnitProvider>(context, listen: false)
-                  .updateItemUnit(unit.id!, name, desc, token);
+                  .updateItemUnit(unit.id.toString()!, name, desc, token);
 
               Navigator.pop(context);
             },

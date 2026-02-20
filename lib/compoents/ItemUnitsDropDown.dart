@@ -30,8 +30,8 @@ class ItemUnitDropdown extends StatelessWidget {
       ),
       items: provider.units.map((unit) {
         return DropdownMenuItem<String>(
-          value: unit.id,
-          child: Text(unit.unitName ?? "Unnamed Unit"),
+          value: unit.id.toString(),
+          child: Text(unit.name ?? "Unnamed Unit"),
         );
       }).toList(),
       onChanged: (value) {

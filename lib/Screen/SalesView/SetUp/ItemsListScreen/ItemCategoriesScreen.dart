@@ -152,7 +152,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           width: 8,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: cat.isEnable == true
+                            color: cat.isActive == true
                                 ? Colors.green
                                 : Colors.red,
                             borderRadius: BorderRadius.circular(8),
@@ -166,7 +166,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                cat.categoryName ?? '-',
+                                cat.name ?? '-',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -176,21 +176,21 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                               Row(
                                 children: [
                                   Icon(
-                                    cat.isEnable == true
+                                    cat.isActive == true
                                         ? Icons.check_circle
                                         : Icons.cancel,
-                                    color: cat.isEnable == true
+                                    color: cat.isActive == true
                                         ? Colors.green
                                         : Colors.red,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    cat.isEnable == true
+                                    cat.isActive == true
                                         ? "Enabled"
                                         : "Disabled",
                                     style: TextStyle(
-                                      color: cat.isEnable == true
+                                      color: cat.isActive == true
                                           ? Colors.green
                                           : Colors.red,
                                       fontWeight: FontWeight.w600,
@@ -254,7 +254,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                                   },
                                 );
                                 if (confirm == true) {
-                                  provider.deleteCategory(cat.id!);
+                                  provider.deleteCategory(cat.id.toString()!);
                                 }
                               },
                             ),
@@ -273,8 +273,8 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   }
   // In your CategoriesScreen, add this method inside _CategoriesScreenState
   void _showEditCategoryDialog(CategoriesModel cat) async {
-    _categoryCtrl.text = cat.categoryName ?? '';
-    bool isEnabled = cat.isEnable ?? true;
+    _categoryCtrl.text = cat.name ?? '';
+    bool isEnabled = cat.isActive ?? true;
 
     showDialog(
       context: context,
@@ -319,7 +319,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 if (token == null) return;
 
                 await Provider.of<CategoriesProvider>(context, listen: false)
-                    .updateCategory(cat.id!, name, isEnabled,);
+                    .updateCategory(cat.id.toString()!, name, isEnabled,);
 
                 Navigator.pop(context);
               },

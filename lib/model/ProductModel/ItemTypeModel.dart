@@ -1,68 +1,35 @@
 class ItemTypeModel {
-  final String? id;
-  final Category? category;
-  final String? itemTypeName;
-  final bool? isEnable;
+  final int? id;
+  final String? name;
+  final bool? isActive;
   final String? createdAt;
   final String? updatedAt;
-  final int? v;
 
   ItemTypeModel({
     this.id,
-    this.category,
-    this.itemTypeName,
-    this.isEnable,
+    this.name,
+    this.isActive,
     this.createdAt,
     this.updatedAt,
-    this.v,
   });
 
   factory ItemTypeModel.fromJson(Map<String, dynamic> json) {
     return ItemTypeModel(
-      id: json['_id'],
-      category:
-      json['category'] != null ? Category.fromJson(json['category']) : null,
-      itemTypeName: json['itemTypeName'],
-      isEnable: json['isEnable'],
-      createdAt: json['createdAt'],
-      updatedAt: json['updatedAt'],
-      v: json['__v'],
+      id: json['id'],
+      name: json['name'],
+      isActive: json['is_active'] == 1 || json['is_active'] == true,
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      '_id': id,
-      'category': category?.toJson(),
-      'itemTypeName': itemTypeName,
-      'isEnable': isEnable,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt,
-      '__v': v,
-    };
-  }
-}
-
-class Category {
-  final String? id;
-  final String? categoryName;
-
-  Category({
-    this.id,
-    this.categoryName,
-  });
-
-  factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(
-      id: json['_id'],
-      categoryName: json['categoryName'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      '_id': id,
-      'categoryName': categoryName,
+      'id': id,
+      'name': name,
+      'is_active': isActive == true ? 1 : 0,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }

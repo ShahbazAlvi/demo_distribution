@@ -174,7 +174,7 @@ class _ItemTypeScreenState extends State<ItemTypeScreen> {
                           width: 8,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: item.isEnable == true
+                            color: item.isActive == true
                                 ? Colors.green
                                 : Colors.red,
                             borderRadius: BorderRadius.circular(8),
@@ -186,39 +186,32 @@ class _ItemTypeScreenState extends State<ItemTypeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                item.itemTypeName ?? '-',
+                                item.name ?? '-',
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               const SizedBox(height: 6),
-                              Text(
-                                "Category: ${item.category?.categoryName ?? 'N/A'}",
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.black87,
-                                ),
-                              ),
                               const SizedBox(height: 6),
                               Row(
                                 children: [
                                   Icon(
-                                    item.isEnable == true
+                                    item.isActive == true
                                         ? Icons.check_circle
                                         : Icons.cancel,
-                                    color: item.isEnable == true
+                                    color: item.isActive == true
                                         ? Colors.green
                                         : Colors.red,
                                     size: 18,
                                   ),
                                   const SizedBox(width: 6),
                                   Text(
-                                    item.isEnable == true
+                                    item.isActive == true
                                         ? "Enabled"
                                         : "Disabled",
                                     style: TextStyle(
-                                      color: item.isEnable == true
+                                      color: item.isActive == true
                                           ? Colors.green
                                           : Colors.red,
                                       fontWeight: FontWeight.w600,
@@ -268,7 +261,7 @@ class _ItemTypeScreenState extends State<ItemTypeScreen> {
                                   },
                                 );
                                 if (confirm == true) {
-                                  provider.deleteItemType(item.id!);
+                                  provider.deleteItemType(item.id.toString()!);
                                 }
                               },
                             ),
@@ -286,9 +279,9 @@ class _ItemTypeScreenState extends State<ItemTypeScreen> {
     );
   }
   void _showEditItemTypeDialog(ItemTypeModel item) async {
-    final TextEditingController itemTypeCtrl = TextEditingController(text: item.itemTypeName);
-    String? selectedCategoryId = item.category?.id;
-    bool isEnable = item.isEnable ?? true;
+    final TextEditingController itemTypeCtrl = TextEditingController(text: item.name);
+    String? selectedCategoryId = item.id as String?;
+    bool isEnable = item.isActive ?? true;
 
     showDialog(
       context: context,
@@ -374,7 +367,7 @@ class _ItemTypeScreenState extends State<ItemTypeScreen> {
                 );
 
                 final success = await Provider.of<ItemTypeProvider>(context, listen: false).updateItemType(
-                  id: item.id!,
+                  id: item.id.toString()!,
                   categoryId: selectedCategoryId!,
                   itemTypeName: itemTypeCtrl.text.trim(),
                   isEnable: isEnable,
