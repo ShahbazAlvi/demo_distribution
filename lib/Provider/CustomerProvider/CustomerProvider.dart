@@ -36,6 +36,8 @@ bool get isLoading=>_isLoading;
   final TextEditingController CreditDaysLimitController=TextEditingController();
   final TextEditingController CreditCashLimitController=TextEditingController();
   final TextEditingController dateController = TextEditingController();
+  final TextEditingController EmailController=TextEditingController();
+  final TextEditingController SubAreaController=TextEditingController();
 
 
 
@@ -96,8 +98,10 @@ bool get isLoading=>_isLoading;
   Future<bool> addCustomer({
     required BuildContext context,
     required String paymentType,
-    required String openingBalanceDate,
   }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -112,19 +116,20 @@ bool get isLoading=>_isLoading;
     final url = Uri.parse("${ApiEndpoints.baseUrl}/customers");
 
     final body = {
-      "sales_area_id": 3,//AreaNameController.text.trim(),
       "name": CustomerNameController.text.trim(),
+      "phone": ContactNumberController.text.trim(),
+      "email": EmailController.text.trim(), // add EmailController to form
       "address": AddressController.text.trim(),
-      "phone": ContactNumberController.text.trim(),  // <-- fixed
-      //"openingBalance": openingBalanceDate,
       "paymentTerms": paymentType == "credit" ? "Credit" : "Cash",
       "aging_days": int.tryParse(CreditDaysLimitController.text) ?? 0,
       "credit_limit": int.tryParse(CreditCashLimitController.text) ?? 0,
       "opening_balance": int.tryParse(OpeningBalanceController.text) ?? 0,
-      "is_active":1// <-- matches backend
+      "is_active": 1,
+      "sales_area_id": int.tryParse(AreaNameController.text) ?? 0,
+      "sales_sub_area_id": int.tryParse(SubAreaController.text) ?? 0, // add SubAreaController to form
     };
 
-    print("SEND BODY => $body"); // DEBUG PRINT
+    print("SEND BODY => $body"); // Debug
 
     try {
       final response = await http.post(
@@ -136,27 +141,32 @@ bool get isLoading=>_isLoading;
         body: jsonEncode(body),
       );
 
-      print("API RESPONSE => ${response.body}"); // DEBUG PRINT
+      print("API RESPONSE => ${response.body}"); // Debug
 
       if (response.statusCode == 201 || response.statusCode == 200) {
         clearForm();
         fetchCustomers();
+
         final dashboardProvider =
         Provider.of<DashBoardProvider>(context, listen: false);
         await dashboardProvider.fetchDashboardData();
-        notifyListeners();
 
+        _isLoading = false;
+        notifyListeners();
         return true;
       } else {
         _error = "Failed: ${response.body}";
+        _isLoading = false;
+        notifyListeners();
         return false;
       }
     } catch (e) {
       _error = e.toString();
+      _isLoading = false;
+      notifyListeners();
       return false;
     }
   }
-
 
   void clearForm() {
     AreaNameController.clear();
@@ -172,39 +182,7 @@ bool get isLoading=>_isLoading;
   }
 
 
-  // Future<void>DeleteCustomer(String idCustomer)async{
-  //   try{
-  //     _isLoading=true;
-  //     notifyListeners();
-  //     final prefs=await SharedPreferences.getInstance();
-  //     final token=prefs.getString("token");
-  //
-  //     final url = Uri.parse("${ApiEndpoints.baseUrl}/customers/$idCustomer");
-  //     final response = await http.delete(
-  //       url,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer $token",
-  //       },
-  //     );
-  //     if (response.statusCode == 200) {
-  //       debugPrint("✅ Order deleted successfully");
-  //
-  //       _isLoading = false; // re-fetch
-  //       await fetchCustomers();
-  //       notifyListeners();
-  //     } else {
-  //       _error = "Failed to delete: ${response.statusCode} - ${response.body}";
-  //     }
-  //
-  //   }catch (e) {
-  //     _error = "Error deleting: $e";
-  //   } finally {
-  //     _isLoading = false;
-  //     notifyListeners();
-  //   }
-  //
-  // }
+
   Future<bool> DeleteCustomer(String idCustomer, DashBoardProvider dashProvider) async {
     try {
       _isLoading = true;

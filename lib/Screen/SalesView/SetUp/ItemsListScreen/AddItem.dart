@@ -10,6 +10,8 @@ import '../../../../Provider/ProductProvider/ItemCategoriesProvider.dart';
 import '../../../../Provider/ProductProvider/ItemListsProvider.dart';
 import '../../../../Provider/ProductProvider/ItemTypeProvider.dart';
 import '../../../../Provider/ProductProvider/ItemUnitProvider.dart';
+import '../../../../Provider/ProductProvider/manufactures_provider.dart';
+import '../../../../Provider/ProductProvider/sub_category.dart';
 import '../../../../compoents/AppButton.dart';
 import '../../../../compoents/AppColors.dart';
 import '../../../../compoents/AppTextfield.dart';
@@ -17,6 +19,9 @@ import '../../../../compoents/ItemCategoriesDropDown.dart';
 import '../../../../compoents/ItemTypeDropDown.dart';
 import '../../../../compoents/ItemUnitsDropDown.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../../compoents/manufactures_dropdown.dart';
+import '../../../../compoents/sub_Category.dart';
 
 class AddItemScreen extends StatefulWidget {
   final String nextItemId; // Pass itemId from ItemListScreen
@@ -31,10 +36,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
   String? selectedCategoryId;
   String? selectedTypeId;
   String? selectedUnitId;
-
+  int? selectedSubCategoryId;
+  int? selectedManufactureId;
+  final TextEditingController SKUCtrl = TextEditingController();
   final TextEditingController itemNameCtrl = TextEditingController();
-  final TextEditingController perUnitCtrl = TextEditingController();
-  final TextEditingController reorderCtrl = TextEditingController();
+  final TextEditingController salesCtrl = TextEditingController();
+  final TextEditingController purchaseCtrl = TextEditingController();
+  final TextEditingController qntCtrl = TextEditingController();
   final TextEditingController itemKindCtrl = TextEditingController();
 
   File? pickedImage;
@@ -68,6 +76,13 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
       Provider.of<CategoriesProvider>(context, listen: false).fetchCategories();
       Provider.of<ItemTypeProvider>(context, listen: false).fetchItemTypes();
+      Provider.of<SubCategory>(context, listen: false).fetchSubCategories();
+      final provider =
+      Provider.of<ManufacturesProvider>(context, listen: false);
+
+      if (provider.manufactures.isEmpty) {
+        provider.fetchManufactures();
+      }
     });
   }
 
@@ -79,11 +94,42 @@ class _AddItemScreenState extends State<AddItemScreen> {
       final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
       if (image != null) {
-        setState(() => pickedImage = File(image.path));
+        // Get the file extension
+        final ext = image.path.split('.').last.toLowerCase();
+
+        // Only allow jpg, jpeg, png
+        if (ext == 'jpg' || ext == 'jpeg' || ext == 'png') {
+          setState(() => pickedImage = File(image.path));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Only PNG or JPEG images are allowed")),
+          );
+        }
       }
     } else {
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text("Permission denied")));
+    }
+  }
+  Future pickFromCamera() async {
+    if (await Permission.camera.request().isGranted) {
+      final picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: ImageSource.camera);
+
+      if (image != null) {
+        final ext = image.path.split('.').last.toLowerCase();
+        if (ext == 'jpg' || ext == 'jpeg' || ext == 'png') {
+          setState(() => pickedImage = File(image.path));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Only PNG or JPEG images are allowed")),
+          );
+        }
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Camera permission denied")),
+      );
     }
   }
 
@@ -102,15 +148,17 @@ class _AddItemScreenState extends State<AddItemScreen> {
 
     bool success = await provider.addItem(
       context: context,
-      itemId: widget.nextItemId,
-      itemName: itemNameCtrl.text,
-      itemCategory: selectedCategoryId!,
-      itemType: selectedTypeId!,
-      itemUnit: selectedUnitId!,
-      perUnit: perUnitCtrl.text,
-      reorder: reorderCtrl.text,
-      itemKind: itemKindCtrl.text,
-      itemImage: pickedImage!,
+      sku: SKUCtrl.text,
+      name: itemNameCtrl.text,
+      itemTypeId: selectedTypeId!,
+      categoryId: selectedCategoryId!,
+      subCategoryId: selectedSubCategoryId!,
+      manufacturerId: selectedManufactureId!,
+      unitId: selectedUnitId!,
+      minQty: qntCtrl.text,
+      purchasePrice: purchaseCtrl.text,
+      salePrice: salesCtrl.text,
+      image: pickedImage!,
     );
 
     if (success) {
@@ -165,20 +213,46 @@ class _AddItemScreenState extends State<AddItemScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
+                AppTextField(controller:SKUCtrl, label:'SKU',  validator: (value) => validator(value as String?)),
+                const SizedBox(height: 10),
                 AppTextField(controller:itemNameCtrl, label:'Item Name',  validator: (value) => validator(value as String?)),
                 const SizedBox(height: 10),
                 CategoriesDropdown(selectedId: selectedCategoryId, onChanged: (id) => setState(() => selectedCategoryId = id)),
+
+                const SizedBox(height: 10),
+            SubCategoryDropdown(
+            selectedSubCategoryId: selectedSubCategoryId,
+            isRequired: true,
+            onChanged: (value) {
+              setState(() {
+                selectedSubCategoryId = value;
+              });
+            },
+          ),
+                const SizedBox(height: 10),
+
+
+            ManufacturesDropdown(
+            selectedManufactureId: selectedManufactureId,
+            isRequired: true,
+            onChanged: (value) {
+              setState(() {
+                selectedManufactureId = value;
+              });
+            },
+          ),
                 const SizedBox(height: 10),
                 ItemTypeDropdown(selectedId: selectedTypeId, onSelected: (id) => setState(() => selectedTypeId = id)),
                 const SizedBox(height: 10),
                 ItemUnitDropdown(selectedId: selectedUnitId, onSelected: (id) => setState(() => selectedUnitId = id)),
                 const SizedBox(height: 10),
-                AppTextField(controller: perUnitCtrl, label:"Per Unit Price",  validator: (value) => validator(value as String?)),
+                AppTextField(controller:qntCtrl, label: "Qnt",  validator: (value) => validator(value as String?)),
                 const SizedBox(height: 10),
-                AppTextField(controller:reorderCtrl, label: "Reorder Level",  validator: (value) => validator(value as String?)),
+                AppTextField(controller: purchaseCtrl, label:"Purchase price",  validator: (value) => validator(value as String?)),
                 const SizedBox(height: 10),
-                AppTextField(controller: itemKindCtrl, label: "Item Kind" ,  validator: (value) => validator(value as String?)),
-                const SizedBox(height: 20),
+                AppTextField(controller: salesCtrl, label:"Sale Price",  validator: (value) => validator(value as String?)),
+                const SizedBox(height: 10),
+
 
                 // Row(
                 //   children: [

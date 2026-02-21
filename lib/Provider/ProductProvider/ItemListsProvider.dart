@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../ApiLink/ApiEndpoint.dart';
 import '../../model/ProductModel/itemsdetailsModel.dart';
 import '../DashBoardProvider.dart';
+import 'package:http_parser/http_parser.dart';
 
 
 class ItemDetailsProvider with ChangeNotifier {
@@ -107,22 +108,7 @@ class ItemDetailsProvider with ChangeNotifier {
   }
 
 
-  // String getNextItemId() {
-  //   if (items.isEmpty) {
-  //     return "001"; // first item
-  //   }
-  //
-  //   // get last itemId (convert to int)
-  //   List<int> ids = items
-  //       .map((e) => int.tryParse(e.itemId) ?? 0)
-  //       .toList()
-  //     ..sort();
-  //
-  //   int nextId = ids.last + 1;
-  //
-  //   // format 3 digits (001, 002, 010...)
-  //   return nextId.toString().padLeft(3, "0");
-  // }
+
 
   Future<String?> getToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -131,15 +117,17 @@ class ItemDetailsProvider with ChangeNotifier {
 
   Future<bool> addItem({
     required BuildContext context,
-    required String itemId,
-    required String itemName,
-    required String itemCategory,
-    required String itemType,
-    required String itemUnit,
-    required String perUnit,
-    required String reorder,
-    required String itemKind,
-    required File itemImage,
+    required String sku,
+    required String name,
+    required String itemTypeId,
+    required String categoryId,
+    required int subCategoryId,
+    required int manufacturerId,
+    required String unitId,
+    required String minQty,
+    required String purchasePrice,
+    required String salePrice,
+    required File image,
   }) async {
     isLoading = true;
     errorMessage = null;
@@ -153,50 +141,62 @@ class ItemDetailsProvider with ChangeNotifier {
       return false;
     }
 
-    final uri = Uri.parse("${ApiEndpoints.baseUrl}/item-details");
+    final uri = Uri.parse("${ApiEndpoints.baseUrl}/items");
     final request = http.MultipartRequest("POST", uri);
 
     request.headers['Authorization'] = 'Bearer $token';
-    request.fields['itemId'] = itemId;
-    request.fields['itemName'] = itemName;
-    request.fields['itemCategory'] = itemCategory;
-    request.fields['itemType'] = itemType;
-    request.fields['itemUnit'] = itemUnit;
-    request.fields['perUnit'] = perUnit;
-    request.fields['reorder'] = reorder;
-    request.fields['itemKind'] = 'Finished Goods';
-    request.fields['isEnable'] = "true";
 
-    request.files.add(await http.MultipartFile.fromPath('itemImage', itemImage.path));
+    request.fields['sku'] = sku;
+    request.fields['name'] = name;
+    request.fields['item_type_id'] = itemTypeId;
+    request.fields['category_id'] = categoryId;
+    request.fields['subcategory_id'] = subCategoryId.toString();
+    request.fields['manufacturer_id'] = manufacturerId.toString();
+    request.fields['unit_id'] = unitId;
+    request.fields['min_level_qty'] = minQty;
+    request.fields['purchase_price'] = purchasePrice;
+    request.fields['sale_price'] = salePrice;
+    request.fields['is_active'] = "1";
+    request.fields['remove_image'] = "0";
 
-    request.fields.forEach((key, value) {
-
-    });
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'image',
+        image.path,
+        contentType: MediaType(
+          'image',
+          image.path.split('.').last.toLowerCase(), // jpeg, png, etc
+        ),
+      ),
+    );
 
     try {
       final response = await request.send();
-      final resBody = await response.stream.bytesToString();
+      final body = await response.stream.bytesToString();
+
+      print("Status: ${response.statusCode}");
+      print("Response: $body");
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         await fetchItems();
         final dashboardProvider =
         Provider.of<DashBoardProvider>(context, listen: false);
         await dashboardProvider.fetchDashboardData();
+
         isLoading = false;
         notifyListeners();
         return true;
       } else {
-        errorMessage = "Failed: $resBody";
+        errorMessage = body;
       }
     } catch (e) {
-      errorMessage = "Error: $e";
+      errorMessage = e.toString();
     }
 
     isLoading = false;
     notifyListeners();
     return false;
   }
-
   Future<bool> updateItem({
     required BuildContext context,
     required String id,

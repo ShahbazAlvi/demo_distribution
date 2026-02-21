@@ -20,6 +20,8 @@ import 'Provider/ProductProvider/ItemListsProvider.dart';
 import 'Provider/ProductProvider/ItemTypeProvider.dart';
 import 'Provider/ProductProvider/ItemUnitProvider.dart';
 import 'Provider/ProductProvider/ProducProvider.dart';
+import 'Provider/ProductProvider/manufactures_provider.dart';
+import 'Provider/ProductProvider/sub_category.dart';
 import 'Provider/Purchase_Order_Provider/Purchase_order_provider.dart';
 import 'Provider/Purchase_Provider/DateWisePurchaseProvider/DateWisePurchaseProvider.dart';
 import 'Provider/Purchase_Provider/GRNProvider/GRN_Provider.dart';
@@ -89,6 +91,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
         ChangeNotifierProvider(create: (_) => DashBoardProvider()),
     ChangeNotifierProvider(create: (_) => PurchaseOrderProvider()),
+        ChangeNotifierProvider(create: (_) => SubCategory()),
+        ChangeNotifierProvider(create: (_) => ManufacturesProvider()),
 
 
 

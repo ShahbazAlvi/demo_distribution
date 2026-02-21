@@ -74,6 +74,16 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
               AppTextField(controller: provider.AddressController, label: "Address", validator: validator),
               SizedBox(height: 10,),
               AppTextField(controller: provider.OpeningBalanceController, label: "Opening Balance", validator: validator),
+              AppTextField(
+                controller: provider.EmailController,
+                label: "Email",
+                validator: validator,
+              ),
+              AppTextField(
+                controller: provider.SubAreaController,
+                label: "Sub Area ID",
+                validator: validator,
+              ),
 
 
               SizedBox(height: 10,),
@@ -121,17 +131,10 @@ class _AddCustomerScreenState extends State<AddCustomerScreen> {
                 title: provider.isLoading?"Loading...": "Save Customer",
                 press: () async {
 
-                  if (selectedDate == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Please select opening balance date")),
-                    );
-                    return;
-                  }
 
                   final success = await provider.addCustomer(
                     context: context,
                     paymentType: paymentType,
-                    openingBalanceDate: selectedDate!,
                   );
 
                   if (success) {
