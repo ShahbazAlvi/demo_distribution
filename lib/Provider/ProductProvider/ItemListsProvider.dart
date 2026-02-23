@@ -13,28 +13,116 @@ import 'package:http_parser/http_parser.dart';
 
 
 class ItemDetailsProvider with ChangeNotifier {
-  List<ItemDetails> items = [];
-  bool isLoading = false;
-  String? errorMessage;
+  // List<ItemDetails> items = [];
+  // bool isLoading = false;
+  // String? errorMessage;
+  //
+  // String baseUrl = "${ApiEndpoints.baseUrl}/items";
+  // String token = "";   // ✅ Put your token here
+  //
+  // Future<void> fetchItems({String? categoryName, bool? isEnable}) async {
+  //   try {
+  //     isLoading = true;
+  //     notifyListeners();
+  //
+  //     final storedToken = await getToken();
+  //     if (storedToken == null) {
+  //       errorMessage = "Token not found";
+  //       isLoading = false;
+  //       notifyListeners();
+  //       print("Fetch Error: Token not found");
+  //       return;
+  //     }
+  //
+  //     final uri = Uri.parse(baseUrl);
+  //
+  //     final response = await http.get(
+  //       uri,
+  //       headers: {
+  //         "Authorization": "Bearer $storedToken",
+  //         "Content-Type": "application/json",
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 200) {
+  //       final Map<String, dynamic> decoded = jsonDecode(response.body);
+  //       final List dataList = decoded['data']['data'] ?? [];
+  //       items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
+  //     } else if (response.statusCode == 401) {
+  //       errorMessage = "Unauthorized: Please login again";
+  //       print("Fetch Error: Unauthorized");
+  //     } else if (response.statusCode == 404) {
+  //       errorMessage = "Endpoint not found";
+  //       print("Fetch Error: 404 Not Found");
+  //     } else {
+  //       errorMessage = "Error: ${response.body}";
+  //       print("Fetch Error: ${response.body}");
+  //     }
+  //   } catch (e) {
+  //     errorMessage = "Fetch Error: $e";
+  //     print("Fetch Exception: $e");
+  //   }
+  //
+  //   isLoading = false;
+  //   notifyListeners();
+  // }
+
+
+  List<ItemDetails> _items = [];
+  bool _isLoading = false;
+  String? _errorMessage;
+  int _currentPage = 1;
+  int? _totalPages;
+  int? _totalCount;
+  bool _hasMore = true;
+
+  // Getters
+  List<ItemDetails> get items => _items;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
+  bool get hasMore => _hasMore;
+  int? get totalCount => _totalCount;
 
   String baseUrl = "${ApiEndpoints.baseUrl}/items";
-  String token = "";   // ✅ Put your token here
 
-  Future<void> fetchItems({String? categoryName, bool? isEnable}) async {
+  Future<String?> getToken() async {
     try {
-      isLoading = true;
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('token');
+    } catch (e) {
+      print("Error getting token: $e");
+      return null;
+    }
+  }
+
+  Future<void> fetchItems({
+    String? categoryName,
+    bool? isEnable,
+    bool refresh = false,
+  }) async {
+    if (refresh) {
+      _currentPage = 1;
+      _items.clear();
+      _hasMore = true;
+    }
+
+    if (!_hasMore || _isLoading) return;
+
+    try {
+      _isLoading = true;
+      _errorMessage = null;
       notifyListeners();
 
       final storedToken = await getToken();
       if (storedToken == null) {
-        errorMessage = "Token not found";
-        isLoading = false;
+        _errorMessage = "Authentication token not found";
+        _isLoading = false;
         notifyListeners();
-        print("Fetch Error: Token not found");
         return;
       }
 
-      final uri = Uri.parse(baseUrl);
+      // Add pagination to URL
+      final uri = Uri.parse("$baseUrl?page=$_currentPage");
 
       final response = await http.get(
         uri,
@@ -46,27 +134,79 @@ class ItemDetailsProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> decoded = jsonDecode(response.body);
-        final List dataList = decoded['data']['data'] ?? [];
-        items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
+
+        // Handle paginated response
+        if (decoded['data'] != null && decoded['data']['data'] != null) {
+          final List dataList = decoded['data']['data'];
+          final newItems = dataList.map((e) => ItemDetails.fromJson(e)).toList();
+
+          _items.addAll(newItems);
+
+          // Update pagination info
+          if (decoded['data']['total'] != null) {
+            _totalCount = decoded['data']['total'];
+            _currentPage = decoded['data']['current_page'] ?? _currentPage;
+            _totalPages = decoded['data']['last_page'];
+            _hasMore = _currentPage < (_totalPages ?? 1);
+          }
+
+          _currentPage++;
+        } else {
+          // Handle non-paginated response
+          final List dataList = decoded['data'] ?? decoded['items'] ?? [];
+          _items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
+          _hasMore = false; // No pagination, so no more items
+        }
       } else if (response.statusCode == 401) {
-        errorMessage = "Unauthorized: Please login again";
-        print("Fetch Error: Unauthorized");
+        _errorMessage = "Unauthorized: Please login again";
       } else if (response.statusCode == 404) {
-        errorMessage = "Endpoint not found";
-        print("Fetch Error: 404 Not Found");
+        _errorMessage = "Endpoint not found";
       } else {
-        errorMessage = "Error: ${response.body}";
-        print("Fetch Error: ${response.body}");
+        _errorMessage = "Error ${response.statusCode}: ${response.body}";
       }
     } catch (e) {
-      errorMessage = "Fetch Error: $e";
-      print("Fetch Exception: $e");
+      _errorMessage = "Connection error: $e";
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
   }
 
+  Future<void> fetchMoreItems() async {
+    if (_hasMore && !_isLoading) {
+      await fetchItems();
+    }
+  }
+
+  Future<void> refreshItems() async {
+    await fetchItems(refresh: true);
+  }
+
+  ItemDetails? getItemById(int id) {
+    try {
+      return _items.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  List<ItemDetails> searchItems(String query) {
+    if (query.isEmpty) return _items;
+
+    return _items.where((item) {
+      return item.name.toLowerCase().contains(query.toLowerCase()) ;
+         // (item.itemCode?.toLowerCase().contains(query.toLowerCase()) ?? false) ||
+          //(item.categoryName?.toLowerCase().contains(query.toLowerCase()) ?? false);
+    }).toList();
+  }
+
+  void clearItems() {
+    _items.clear();
+    _currentPage = 1;
+    _hasMore = true;
+    _errorMessage = null;
+    notifyListeners();
+  }
 
 
 
@@ -110,10 +250,10 @@ class ItemDetailsProvider with ChangeNotifier {
 
 
 
-  Future<String?> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString("token");
-  }
+  // Future<String?> getToken() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString("token");
+  // }
 
   Future<bool> addItem({
     required BuildContext context,
@@ -129,14 +269,14 @@ class ItemDetailsProvider with ChangeNotifier {
     required String salePrice,
     required File image,
   }) async {
-    isLoading = true;
-    errorMessage = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     final token = await getToken();
     if (token == null) {
-      errorMessage = "Token not found";
-      isLoading = false;
+      _errorMessage = "Token not found";
+      _isLoading = false;
       notifyListeners();
       return false;
     }
@@ -183,17 +323,17 @@ class ItemDetailsProvider with ChangeNotifier {
         Provider.of<DashBoardProvider>(context, listen: false);
         await dashboardProvider.fetchDashboardData();
 
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return true;
       } else {
-        errorMessage = body;
+        _errorMessage = body;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      _errorMessage = e.toString();
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
     return false;
   }
@@ -209,14 +349,14 @@ class ItemDetailsProvider with ChangeNotifier {
     required String itemKind,
     File? itemImage, // OPTIONAL
   }) async {
-    isLoading = true;
-    errorMessage = null;
+    _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
     final storedToken = await getToken();
     if (storedToken == null) {
-      errorMessage = "Token not found";
-      isLoading = false;
+      _errorMessage = "Token not found";
+      _isLoading = false;
       notifyListeners();
       return false;
     }
@@ -250,17 +390,17 @@ class ItemDetailsProvider with ChangeNotifier {
         Provider.of<DashBoardProvider>(context, listen: false);
         await dashboardProvider.fetchDashboardData();
 
-        isLoading = false;
+        _isLoading = false;
         notifyListeners();
         return true;
       } else {
-        errorMessage = body;
+        _errorMessage = body;
       }
     } catch (e) {
-      errorMessage = e.toString();
+      _errorMessage = e.toString();
     }
 
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
     return false;
   }

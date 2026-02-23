@@ -11,86 +11,227 @@ import '../../ApiLink/ApiEndpoint.dart';
 import '../../model/CustomerModel/CustomersDefineModel.dart';
 import '../DashBoardProvider.dart';
 
-class CustomerProvider with ChangeNotifier{
-  List<CustomerModel>_customer=[];
+ class CustomerProvider with ChangeNotifier{
 
-  List<CustomerData> _customers = [];
+   List<CustomerModel> _customer = [];
+   List<CustomerData> _customers = [];
+   bool _isLoading = false;
+   String? _error;
+   int _currentPage = 1;
+   int? _totalPages;
+   int? _totalCount;
+   bool _hasMore = true;
 
+   // Getters
+   List<CustomerModel> get customer => _customer;
+   List<CustomerData> get customers => _customers;
+   bool get isLoading => _isLoading;
+   String? get error => _error;
+   bool get hasMore => _hasMore;
+   int? get totalCount => _totalCount;
 
-  bool _isLoading=false;
-  String? _error;
+   // Controllers
+   final TextEditingController AreaNameController = TextEditingController();
+   final TextEditingController CustomerNameController = TextEditingController();
+   final TextEditingController ContactNumberController = TextEditingController();
+   final TextEditingController AddressController = TextEditingController();
+   final TextEditingController OpeningBalanceController = TextEditingController();
+   final TextEditingController CreditDaysLimitController = TextEditingController();
+   final TextEditingController CreditCashLimitController = TextEditingController();
+   final TextEditingController dateController = TextEditingController();
+   final TextEditingController EmailController = TextEditingController();
+   final TextEditingController SubAreaController = TextEditingController();
 
-  // gets
-List<CustomerModel> get customer=>_customer;
-  List<CustomerData> get customers => _customers;
-bool get isLoading=>_isLoading;
-  String? get error => _error;
+   Future<void> fetchCustomers({bool refresh = false}) async {
+     if (refresh) {
+       _currentPage = 1;
+       _customers.clear();
+       _hasMore = true;
+     }
 
+     if (!_hasMore || _isLoading) return;
 
+     _isLoading = true;
+     _error = null;
+     notifyListeners();
 
-  final TextEditingController AreaNameController=TextEditingController();
-  final TextEditingController CustomerNameController=TextEditingController();
-  final TextEditingController ContactNumberController=TextEditingController();
-  final TextEditingController AddressController=TextEditingController();
-  final TextEditingController OpeningBalanceController=TextEditingController();
-  final TextEditingController CreditDaysLimitController=TextEditingController();
-  final TextEditingController CreditCashLimitController=TextEditingController();
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController EmailController=TextEditingController();
-  final TextEditingController SubAreaController=TextEditingController();
+     try {
+       final url = Uri.parse("${ApiEndpoints.baseUrl}/customers?page=$_currentPage");
 
+       final prefs = await SharedPreferences.getInstance();
+       final token = prefs.getString('token');
 
+       if (token == null) {
+         _error = "Authentication token not found";
+         _isLoading = false;
+         notifyListeners();
+         return;
+       }
 
+       final response = await http.get(
+         url,
+         headers: {
+           "Content-Type": "application/json",
+           "Authorization": "Bearer $token",
+         },
+       );
 
+       if (response.statusCode == 200) {
+         final Map<String, dynamic> jsonData = jsonDecode(response.body);
+         print("CUSTOMERS API Page $_currentPage => ${jsonData["data"]?["data"]?.length} customers");
 
+         if (jsonData["success"] == true) {
+           final List list = jsonData["data"]["data"] ?? [];
+           final newCustomers = list.map((e) => CustomerData.fromJson(e)).toList();
 
+           _customers.addAll(newCustomers);
 
-  Future<void> fetchCustomers() async {
-    _isLoading = true;
-    _error = '';
-    notifyListeners();
+           // Handle pagination info
+           if (jsonData["data"]["total"] != null) {
+             _totalCount = jsonData["data"]["total"];
+             _currentPage = jsonData["data"]["current_page"] ?? _currentPage;
+             _totalPages = jsonData["data"]["last_page"];
+             _hasMore = _currentPage < (_totalPages ?? 1);
+           }
 
-    try {
-      final url = Uri.parse("${ApiEndpoints.baseUrl}/customers");
+           _currentPage++;
+         } else {
+           _error = jsonData["message"] ?? "Failed to load customers";
+         }
+       } else {
+         _error = "Error ${response.statusCode}: Failed to load customers";
+       }
+     } catch (e) {
+       _error = "Connection error: $e";
+     }
 
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString('token');
+     _isLoading = false;
+     notifyListeners();
+   }
 
-      final response = await http.get(
-        url,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $token",
-        },
-      );
+   Future<void> fetchMoreCustomers() async {
+     if (_hasMore && !_isLoading) {
+       await fetchCustomers();
+     }
+   }
 
-      final Map<String, dynamic> jsonData = jsonDecode(response.body);
-      print("CUSTOMERS API => $jsonData");
+   Future<void> refreshCustomers() async {
+     await fetchCustomers(refresh: true);
+   }
 
-      if (response.statusCode == 200 && jsonData["success"] == true) {
-        final List list = jsonData["data"]["data"] ?? [];
+   Future<CustomerData?> getCustomerById(int id) async {
+     try {
+       if (_customers.isNotEmpty) {
+         return _customers.firstWhere((c) => c.id == id);
+       }
 
-        _customers = list.map((e) => CustomerData.fromJson(e)).toList();
-      } else {
-        _error = jsonData["message"] ?? "Failed to load customers";
-      }
-    } catch (e) {
-      _error = "Error: $e";
-    }
+       await fetchCustomers();
+       return _customers.firstWhere((c) => c.id == id);
+     } catch (e) {
+       return null;
+     }
+   }
 
-    _isLoading = false;
-    notifyListeners();
-  }
+   void clearSearch() {
+     _customers.clear();
+     _currentPage = 1;
+     _hasMore = true;
+     fetchCustomers();
+   }
 
-
-
-  // get token sharePerference
-  Future<String?> getToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString("auth_token");
-    print("TOKEN => $token");
-
-  }
+   @override
+   void dispose() {
+     AreaNameController.dispose();
+     CustomerNameController.dispose();
+     ContactNumberController.dispose();
+     AddressController.dispose();
+     OpeningBalanceController.dispose();
+     CreditDaysLimitController.dispose();
+     CreditCashLimitController.dispose();
+     dateController.dispose();
+     EmailController.dispose();
+     SubAreaController.dispose();
+     super.dispose();
+   }
+//   List<CustomerModel>_customer=[];
+//
+//   List<CustomerData> _customers = [];
+//
+//
+//   bool _isLoading=false;
+//   String? _error;
+//
+//   // gets
+// List<CustomerModel> get customer=>_customer;
+//   List<CustomerData> get customers => _customers;
+// bool get isLoading=>_isLoading;
+//   String? get error => _error;
+//
+//
+//
+//   final TextEditingController AreaNameController=TextEditingController();
+//   final TextEditingController CustomerNameController=TextEditingController();
+//   final TextEditingController ContactNumberController=TextEditingController();
+//   final TextEditingController AddressController=TextEditingController();
+//   final TextEditingController OpeningBalanceController=TextEditingController();
+//   final TextEditingController CreditDaysLimitController=TextEditingController();
+//   final TextEditingController CreditCashLimitController=TextEditingController();
+//   final TextEditingController dateController = TextEditingController();
+//   final TextEditingController EmailController=TextEditingController();
+//   final TextEditingController SubAreaController=TextEditingController();
+//
+//
+//
+//
+//
+//
+//
+//   Future<void> fetchCustomers() async {
+//     _isLoading = true;
+//     _error = '';
+//     notifyListeners();
+//
+//     try {
+//       final url = Uri.parse("${ApiEndpoints.baseUrl}/customers");
+//
+//       final prefs = await SharedPreferences.getInstance();
+//       final token = prefs.getString('token');
+//
+//       final response = await http.get(
+//         url,
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Authorization": "Bearer $token",
+//         },
+//       );
+//
+//       final Map<String, dynamic> jsonData = jsonDecode(response.body);
+//       print("CUSTOMERS API => $jsonData");
+//
+//       if (response.statusCode == 200 && jsonData["success"] == true) {
+//         final List list = jsonData["data"]["data"] ?? [];
+//
+//         _customers = list.map((e) => CustomerData.fromJson(e)).toList();
+//       } else {
+//         _error = jsonData["message"] ?? "Failed to load customers";
+//       }
+//     } catch (e) {
+//       _error = "Error: $e";
+//     }
+//
+//     _isLoading = false;
+//     notifyListeners();
+//   }
+//
+//
+//
+//   // get token sharePerference
+//   Future<String?> getToken() async {
+//     SharedPreferences prefs = await SharedPreferences.getInstance();
+//     String? token = prefs.getString("auth_token");
+//     print("TOKEN => $token");
+//
+//   }
 
 
 
