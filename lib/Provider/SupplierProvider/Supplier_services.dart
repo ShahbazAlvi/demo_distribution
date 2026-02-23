@@ -8,7 +8,7 @@ import '../../model/SupplierModel/SupplierModel.dart';
 
 
 class SupplierApi {
-  static const String baseUrl = "${ApiEndpoints.baseUrl}"; // example: https://yourapi.com/api
+  static final String baseUrl = "${ApiEndpoints.baseUrl}"; // example: https://yourapi.com/api
 
   /// ✅ Fetch Supplier List
   static Future<List<SupplierModel>> fetchSuppliers() async {

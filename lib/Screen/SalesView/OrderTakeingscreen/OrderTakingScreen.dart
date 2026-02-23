@@ -565,22 +565,12 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
         ),
       ),
       centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white),
-        onPressed: () {
-          // Open drawer or menu
-        },
-      ),
       actions: [
         Container(
           margin: const EdgeInsets.only(right: 16),
           decoration: BoxDecoration(
             color: Colors.white.withOpacity(0.2),
             borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
           ),
         ),
       ],
@@ -768,33 +758,6 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
     return Column(
       children: [
         // Stats Cards
-        Container(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              _buildStatCard(
-                'Total Orders',
-                provider.orderData!.data.length.toString(),
-                Icons.shopping_bag,
-                Colors.blue,
-              ),
-              const SizedBox(width: 12),
-              _buildStatCard(
-                'Pending',
-                provider.orderData!.data.where((o) => o.status == 'Pending').length.toString(),
-                Icons.pending_actions,
-                Colors.orange,
-              ),
-              const SizedBox(width: 12),
-              _buildStatCard(
-                'Delivered',
-                provider.orderData!.data.where((o) => o.status == 'Delivered').length.toString(),
-                Icons.check_circle,
-                Colors.green,
-              ),
-            ],
-          ),
-        ),
 
         // Add Order FAB for mobile-friendly experience
         Padding(
@@ -867,53 +830,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, size: 20, color: color),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+
 
   Widget _buildOrderCard(order) {
     final statusColor = order.status == 'Delivered'
@@ -1117,6 +1034,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                 ),
 
                 const SizedBox(height: 16),
+
 
                 // Action Buttons
                 Row(

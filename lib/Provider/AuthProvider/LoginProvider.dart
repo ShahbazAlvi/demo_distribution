@@ -43,33 +43,9 @@ class LoginProvider with ChangeNotifier{
             'identifier':email,
             'password':password
           }));
-      // final data = jsonDecode(response.body);
-      // print(data);
-      // if (response.statusCode == 200 && data["token"] != null) {
-      //   message = "Login successful!";
-      //   final prefs = await SharedPreferences.getInstance();
-      //
-      //   await prefs.setString('token', data["token"]);
-      //   await prefs.setString('username', data['user']['username'] ?? '');
-      //   await prefs.setString('user', jsonEncode(data["user"]));
-      //
-      //   // ✅ Optional: Only save role if it exists
-      //   if (data['user']['role'] != null) {
-      //     await prefs.setString('role', data['user']['role']);
-      //   }
-      //
-      //   Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(builder: (context) => const Dashboardscreen()),
-      //   );
-      // }
-      //
-      // else{
-      //   message = data["message"] ?? "Invalid credentials";
-      // }
+
 
       final data = jsonDecode(response.body);
-      print(data);
 
       if (response.statusCode == 200 && data["success"] == true) {
         message = "Login successful!";

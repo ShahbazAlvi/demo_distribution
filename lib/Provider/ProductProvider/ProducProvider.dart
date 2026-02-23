@@ -15,7 +15,7 @@ class ProductProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> fetchProducts() async {
-    const String apiUrl = '${ApiEndpoints.baseUrl}/item-details/order-taker'; // 🔗 Replace with your actual API
+    final String apiUrl = '${ApiEndpoints.baseUrl}/item-details/order-taker'; // 🔗 Replace with your actual API
 
     _isLoading = true;
     notifyListeners();

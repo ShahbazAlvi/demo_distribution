@@ -5,7 +5,7 @@ import '../../ApiLink/ApiEndpoint.dart';
 import '../../model/CustomersLedger/CustomerLedger.dart';
 
 class CustomerLedgerService {
-  static const String baseUrl =
+  static final String baseUrl =
       "${ApiEndpoints.baseUrl}/customer-ledger";
 
   Future<CustomerLedgerDetailsModel?> fetchCustomerLedger({

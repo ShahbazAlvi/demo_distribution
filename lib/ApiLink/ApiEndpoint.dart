@@ -1,4 +1,11 @@
 class ApiEndpoints {
-  // Base URL
-  static const String baseUrl = "https://api.distribution.afaqmis.com/api";
+  static const bool isProduction = bool.fromEnvironment('dart.vm.product');
+
+  static String get baseUrl {
+    if (isProduction) {
+      return "https://api.distribution.afaqmis.com/api";
+    } else {
+      return "http://192.168.100.145:5000/api"; // Android emulator localhost
+    }
+  }
 }

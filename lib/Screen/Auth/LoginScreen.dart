@@ -48,27 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
               SizedBox(height: screenHeight * 0.02),
               if(loginProvider.message.isNotEmpty)
                 Center(child: Text(loginProvider.message,style: TextStyle(color: Colors.red),),),
-              // RichText(text: TextSpan(
-              //   text: "Don't have an account? ",
-              //   style: const TextStyle(
-              //     color: Colors.black87,
-              //     fontSize: 16,
-              //   ),
-              //   children: [
-              //     TextSpan(
-              //       text: 'Sign up',
-              //       style: const TextStyle(
-              //         color: Colors.blue, // clickable text color
-              //         fontWeight: FontWeight.bold,
-              //       ),
-              //       recognizer: TapGestureRecognizer()
-              //         ..onTap = () {
-              //           // 👇 navigate to your sign-up screen
-              //           // Navigator.pushReplacement(context,MaterialPageRoute(builder:(context)=>SignUp()));
-              //         },
-              //     ),
-              //   ],
-              // ))
+
 
             ],
           ),

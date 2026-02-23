@@ -8,7 +8,7 @@ import '../../../ApiLink/ApiEndpoint.dart';
 import '../../../model/Purchase_Model/GNRModel/GNR_Model.dart';
 
 class GRNApiService {
-  static const String baseUrl = "${ApiEndpoints.baseUrl}"; // from your ApiEndpoint.dart
+  static final String baseUrl = "${ApiEndpoints.baseUrl}"; // from your ApiEndpoint.dart
 
   /// ✅ Fetch All GRN Records
   static Future<List<GRNModel>> fetchGRN() async {
