@@ -13,116 +13,31 @@ import 'package:http_parser/http_parser.dart';
 
 
 class ItemDetailsProvider with ChangeNotifier {
-  // List<ItemDetails> items = [];
-  // bool isLoading = false;
-  // String? errorMessage;
-  //
-  // String baseUrl = "${ApiEndpoints.baseUrl}/items";
-  // String token = "";   // ✅ Put your token here
-  //
-  // Future<void> fetchItems({String? categoryName, bool? isEnable}) async {
-  //   try {
-  //     isLoading = true;
-  //     notifyListeners();
-  //
-  //     final storedToken = await getToken();
-  //     if (storedToken == null) {
-  //       errorMessage = "Token not found";
-  //       isLoading = false;
-  //       notifyListeners();
-  //       print("Fetch Error: Token not found");
-  //       return;
-  //     }
-  //
-  //     final uri = Uri.parse(baseUrl);
-  //
-  //     final response = await http.get(
-  //       uri,
-  //       headers: {
-  //         "Authorization": "Bearer $storedToken",
-  //         "Content-Type": "application/json",
-  //       },
-  //     );
-  //
-  //     if (response.statusCode == 200) {
-  //       final Map<String, dynamic> decoded = jsonDecode(response.body);
-  //       final List dataList = decoded['data']['data'] ?? [];
-  //       items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
-  //     } else if (response.statusCode == 401) {
-  //       errorMessage = "Unauthorized: Please login again";
-  //       print("Fetch Error: Unauthorized");
-  //     } else if (response.statusCode == 404) {
-  //       errorMessage = "Endpoint not found";
-  //       print("Fetch Error: 404 Not Found");
-  //     } else {
-  //       errorMessage = "Error: ${response.body}";
-  //       print("Fetch Error: ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     errorMessage = "Fetch Error: $e";
-  //     print("Fetch Exception: $e");
-  //   }
-  //
-  //   isLoading = false;
-  //   notifyListeners();
-  // }
-
-
   List<ItemDetails> _items = [];
   bool _isLoading = false;
-  String? _errorMessage;
-  int _currentPage = 1;
-  int? _totalPages;
-  int? _totalCount;
-  bool _hasMore = true;
+  String _errorMessage='';
 
-  // Getters
-  List<ItemDetails> get items => _items;
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage;
-  bool get hasMore => _hasMore;
-  int? get totalCount => _totalCount;
-
+  List<ItemDetails> get items=> _items;
+  bool get isLoading=> _isLoading;
+  String get errorMessage=> _errorMessage;
   String baseUrl = "${ApiEndpoints.baseUrl}/items";
+  String token = "";   // ✅ Put your token here
 
-  Future<String?> getToken() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString('token');
-    } catch (e) {
-      print("Error getting token: $e");
-      return null;
-    }
-  }
-
-  Future<void> fetchItems({
-    String? categoryName,
-    bool? isEnable,
-    bool refresh = false,
-  }) async {
-    if (refresh) {
-      _currentPage = 1;
-      _items.clear();
-      _hasMore = true;
-    }
-
-    if (!_hasMore || _isLoading) return;
-
+  Future<void> fetchItems({String? categoryName, bool? isEnable}) async {
     try {
       _isLoading = true;
-      _errorMessage = null;
       notifyListeners();
 
       final storedToken = await getToken();
       if (storedToken == null) {
-        _errorMessage = "Authentication token not found";
+        _errorMessage = "Token not found";
         _isLoading = false;
         notifyListeners();
+        print("Fetch Error: Token not found");
         return;
       }
 
-      // Add pagination to URL
-      final uri = Uri.parse("$baseUrl?page=$_currentPage");
+      final uri = Uri.parse(baseUrl);
 
       final response = await http.get(
         uri,
@@ -134,53 +49,47 @@ class ItemDetailsProvider with ChangeNotifier {
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> decoded = jsonDecode(response.body);
-
-        // Handle paginated response
-        if (decoded['data'] != null && decoded['data']['data'] != null) {
-          final List dataList = decoded['data']['data'];
-          final newItems = dataList.map((e) => ItemDetails.fromJson(e)).toList();
-
-          _items.addAll(newItems);
-
-          // Update pagination info
-          if (decoded['data']['total'] != null) {
-            _totalCount = decoded['data']['total'];
-            _currentPage = decoded['data']['current_page'] ?? _currentPage;
-            _totalPages = decoded['data']['last_page'];
-            _hasMore = _currentPage < (_totalPages ?? 1);
-          }
-
-          _currentPage++;
-        } else {
-          // Handle non-paginated response
-          final List dataList = decoded['data'] ?? decoded['items'] ?? [];
-          _items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
-          _hasMore = false; // No pagination, so no more items
-        }
+        final List dataList = decoded['data']['data'] ?? [];
+        _items = dataList.map((e) => ItemDetails.fromJson(e)).toList();
       } else if (response.statusCode == 401) {
         _errorMessage = "Unauthorized: Please login again";
+        print("Fetch Error: Unauthorized");
       } else if (response.statusCode == 404) {
         _errorMessage = "Endpoint not found";
+        print("Fetch Error: 404 Not Found");
       } else {
-        _errorMessage = "Error ${response.statusCode}: ${response.body}";
+        _errorMessage = "Error: ${response.body}";
+        print("Fetch Error: ${response.body}");
       }
     } catch (e) {
-      _errorMessage = "Connection error: $e";
+      _errorMessage = "Fetch Error: $e";
+      print("Fetch Exception: $e");
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> fetchMoreItems() async {
-    if (_hasMore && !_isLoading) {
-      await fetchItems();
+
+
+
+  Future<String?> getToken() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('token');
+    } catch (e) {
+      print("Error getting token: $e");
+      return null;
     }
   }
 
-  Future<void> refreshItems() async {
-    await fetchItems(refresh: true);
-  }
+
+
+      // Add pagination to URL
+
+
+
+
 
   ItemDetails? getItemById(int id) {
     try {
@@ -200,13 +109,7 @@ class ItemDetailsProvider with ChangeNotifier {
     }).toList();
   }
 
-  void clearItems() {
-    _items.clear();
-    _currentPage = 1;
-    _hasMore = true;
-    _errorMessage = null;
-    notifyListeners();
-  }
+
 
 
 
@@ -270,7 +173,7 @@ class ItemDetailsProvider with ChangeNotifier {
     required File image,
   }) async {
     _isLoading = true;
-    _errorMessage = null;
+    _errorMessage = '';
     notifyListeners();
 
     final token = await getToken();
@@ -350,7 +253,7 @@ class ItemDetailsProvider with ChangeNotifier {
     File? itemImage, // OPTIONAL
   }) async {
     _isLoading = true;
-    _errorMessage = null;
+    _errorMessage = '';
     notifyListeners();
 
     final storedToken = await getToken();

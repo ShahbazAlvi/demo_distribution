@@ -36,13 +36,21 @@ class LoginProvider with ChangeNotifier{
     notifyListeners();
 
     try{
-      final response=await http.post(Uri.parse('${ApiEndpoints.baseUrl}/auth/login'),
-          headers: {"Content-Type": "application/json"},
+      // final response=await http.post(Uri.parse('${ApiEndpoints.baseUrl}/auth/login'),
+      //     headers: {"Content-Type": "application/json"},
+      //
+      //     body: jsonEncode({
+      //       'identifier':email,
+      //       'password':password
+      //     }));
+      final client = http.Client(); // ek baar client create karo
 
-          body: jsonEncode({
-            'identifier':email,
-            'password':password
-          }));
+      final response = await client.post(
+        Uri.parse('${ApiEndpoints.baseUrl}/auth/login'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({'identifier': email, 'password': password}),
+      ).timeout(Duration(seconds: 15));
+      client.close();
 
 
       final data = jsonDecode(response.body);

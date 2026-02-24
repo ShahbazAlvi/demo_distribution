@@ -12,122 +12,31 @@ import '../../model/SaleManModel/SaleManModel.dart';
 import '../DashBoardProvider.dart';
 
 class SaleManProvider with ChangeNotifier {
-  // List<SaleManModel> _salesmen = [];
-  // List<EmployeeData> _employees = [];
-  // bool _isLoading = false;
-  // String? _error;
-  // String? gender;
-  //
-  //
-  // List<SaleManModel> get salesmen => _salesmen;
-  // List<EmployeeData>get employees=>_employees;
-  // bool get isLoading => _isLoading;
-  // String? get error => _error;
-  //
-  // final TextEditingController nameController=TextEditingController();
-  // final TextEditingController phoneController=TextEditingController();
   List<SaleManModel> _salesmen = [];
   List<EmployeeData> _employees = [];
   bool _isLoading = false;
   String? _error;
   String? gender;
-  int? _totalCount;
-  bool _hasMore = true;
-  int _currentPage = 1;
 
-  // Getters
+
   List<SaleManModel> get salesmen => _salesmen;
-  List<EmployeeData> get employees => _employees;
+  List<EmployeeData>get employees=>_employees;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  int? get totalCount => _totalCount;
-  bool get hasMore => _hasMore;
 
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController nameController=TextEditingController();
+  final TextEditingController phoneController=TextEditingController();
 
-  Future<void> fetchSalesmen() async {
+  Future<void> fetchEmployees() async {
     _isLoading = true;
-    _error = null;
-    notifyListeners();
-
-    try {
-      // ✅ Replace with your actual API URL
-      final url = Uri.parse("${ApiEndpoints.baseUrl}/employees/orders");
-
-      final response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonList = jsonDecode(response.body);
-        _salesmen = jsonList.map((e) => SaleManModel.fromJson(e)).toList();
-      } else {
-        _error = "Failed to load data: ${response.statusCode}";
-      }
-    } catch (e) {
-      _error = "Error: $e";
-    }
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  // Future<void> fetchEmployees() async {
-  //   _isLoading = true;
-  //   _error = "";
-  //   notifyListeners();
-  //
-  //   try {
-  //     final prefs = await SharedPreferences.getInstance();
-  //     final token = prefs.getString("token") ?? "";
-  //
-  //     final url = Uri.parse("${ApiEndpoints.baseUrl}/salesmen");
-  //     final response = await http.get(
-  //       url,
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         "Authorization": "Bearer $token",
-  //         "Cache-Control": "no-cache",
-  //       },
-  //     );
-  //
-  //     if (response.statusCode == 200 || response.statusCode == 304) {
-  //       if (response.body.isNotEmpty) {
-  //         final dataJson = jsonDecode(response.body);
-  //         final List<dynamic> jsonList = dataJson['data']['data'];
-  //         _employees = jsonList.map((e) => EmployeeData.fromJson(e)).toList();
-  //       }
-  //     } else {
-  //       _error = "Error Code: ${response.statusCode}";
-  //     }
-  //   } catch (e) {
-  //     _error = "Error: $e";
-  //   }
-  //
-  //   _isLoading = false;
-  //   notifyListeners();
-  // }
-
-  Future<void> fetchEmployees({bool refresh = false}) async {
-    if (refresh) {
-      _currentPage = 1;
-      _employees.clear();
-      _hasMore = true;
-    }
-
-    if (!_hasMore || _isLoading) return;
-
-    _isLoading = true;
-    _error = null;
+    _error = "";
     notifyListeners();
 
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString("token") ?? "";
 
-      final url = Uri.parse(
-        "${ApiEndpoints.baseUrl}/salesmen?page=$_currentPage",
-      );
-
+      final url = Uri.parse("${ApiEndpoints.baseUrl}/salesmen");
       final response = await http.get(
         url,
         headers: {
@@ -140,44 +49,91 @@ class SaleManProvider with ChangeNotifier {
       if (response.statusCode == 200 || response.statusCode == 304) {
         if (response.body.isNotEmpty) {
           final dataJson = jsonDecode(response.body);
-
-          // Handle pagination if available
-          if (dataJson['data'] != null) {
-            final List<dynamic> jsonList = dataJson['data']['data'] ?? [];
-            final newEmployees = jsonList.map((e) => EmployeeData.fromJson(e)).toList();
-
-            _employees.addAll(newEmployees);
-
-            // Update pagination info if available
-            if (dataJson['data']['total'] != null) {
-              _totalCount = dataJson['data']['total'];
-              _hasMore = _employees.length < _totalCount!;
-            }
-
-            _currentPage++;
-          }
+          final List<dynamic> jsonList = dataJson['data']['data'];
+          _employees = jsonList.map((e) => EmployeeData.fromJson(e)).toList();
         }
       } else {
-        _error = "Failed to load employees: ${response.statusCode}";
+        _error = "Error Code: ${response.statusCode}";
       }
     } catch (e) {
-      _error = "Connection error: $e";
+      _error = "Error: $e";
     }
 
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<void> refreshEmployees() async {
-    await fetchEmployees(refresh: true);
-  }
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    phoneController.dispose();
-    super.dispose();
-  }
+  // Future<void> fetchEmployees({bool refresh = false}) async {
+  //   if (refresh) {
+  //     _currentPage = 1;
+  //     _employees.clear();
+  //     _hasMore = true;
+  //   }
+  //
+  //   if (!_hasMore || _isLoading) return;
+  //
+  //   _isLoading = true;
+  //   _error = null;
+  //   notifyListeners();
+  //
+  //   try {
+  //     final prefs = await SharedPreferences.getInstance();
+  //     final token = prefs.getString("token") ?? "";
+  //
+  //     final url = Uri.parse(
+  //       "${ApiEndpoints.baseUrl}/salesmen?page=$_currentPage",
+  //     );
+  //
+  //     final response = await http.get(
+  //       url,
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         "Authorization": "Bearer $token",
+  //         "Cache-Control": "no-cache",
+  //       },
+  //     );
+  //
+  //     if (response.statusCode == 200 || response.statusCode == 304) {
+  //       if (response.body.isNotEmpty) {
+  //         final dataJson = jsonDecode(response.body);
+  //
+  //         // Handle pagination if available
+  //         if (dataJson['data'] != null) {
+  //           final List<dynamic> jsonList = dataJson['data']['data'] ?? [];
+  //           final newEmployees = jsonList.map((e) => EmployeeData.fromJson(e)).toList();
+  //
+  //           _employees.addAll(newEmployees);
+  //
+  //           // Update pagination info if available
+  //           if (dataJson['data']['total'] != null) {
+  //             _totalCount = dataJson['data']['total'];
+  //             _hasMore = _employees.length < _totalCount!;
+  //           }
+  //
+  //           _currentPage++;
+  //         }
+  //       }
+  //     } else {
+  //       _error = "Failed to load employees: ${response.statusCode}";
+  //     }
+  //   } catch (e) {
+  //     _error = "Connection error: $e";
+  //   }
+  //
+  //   _isLoading = false;
+  //   notifyListeners();
+  // }
+  //
+  // Future<void> refreshEmployees() async {
+  //   await fetchEmployees(refresh: true);
+  // }
+  //
+  // @override
+  // void dispose() {
+  //   nameController.dispose();
+  //   phoneController.dispose();
+  //   super.dispose();
+  // }
 
 
   /// ✅ Delete (You can plug API later)
