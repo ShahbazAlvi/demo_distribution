@@ -408,8 +408,8 @@ class _AddCustomerPaymentScreenState extends State<AddCustomerPaymentScreen> {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
-        onPressed: provider.loading ? null : _submitPayment,
-        child: provider.loading
+        onPressed: provider.isLoading ? null : _submitPayment,
+        child: provider.isLoading
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(
           "Save Payment",
@@ -418,28 +418,53 @@ class _AddCustomerPaymentScreenState extends State<AddCustomerPaymentScreen> {
       ),
     );
   }
-  Widget _buildSubmitButton() {
-    final provider = context.watch<CustomerPaymentProvider>();
+  Future<void> _submitPayment() async {
+    if (selectedCustomer == null) {
+      _showMsg("Please select customer");
+      return;
+    }
 
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-        onPressed: provider.loading ? null : _submitPayment,
-        child: provider.loading
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Text(
-          "Save Payment",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-      ),
+    if (selectedInvoice == null) {
+      _showMsg("Please select invoice");
+      return;
+    }
+
+    if (paymentMode == "BANK" && selectedBank == null) {
+      _showMsg("Please select bank");
+      return;
+    }
+
+    final paymentAmount =
+        double.tryParse(paymentController.text.trim()) ?? 0;
+
+    if (paymentAmount <= 0) {
+      _showMsg("Enter valid payment amount");
+      return;
+    }
+
+    final provider = context.read<CustomerPaymentProvider>();
+
+    final success = await provider.submitCustomerPayment(
+      paymentNo: widget.paymentNo,
+      paymentDate: DateTime.now().toString().split(" ").first,
+      customerId: selectedCustomer!.id,
+      invoice: selectedInvoice!,
+      paymentAmount: paymentAmount,
+      status: selectedStatus,
+      paymentMode: paymentMode,
+      bankId: selectedBank?.id,
     );
+
+    if (!mounted) return;
+
+    if (success) {
+      _showMsg("Payment saved successfully ✅");
+      Navigator.pop(context, true);
+    } else {
+      _showMsg(provider.error.isEmpty
+          ? "Payment failed ❌"
+          : provider.error);
+    }
   }
   void _showMsg(String msg) {
     ScaffoldMessenger.of(context).showSnackBar(

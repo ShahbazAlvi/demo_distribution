@@ -114,7 +114,7 @@ class CustomerPaymentProvider with ChangeNotifier {
           "customer_id": customerId,
           "invoice_id": invoice.id,
           "invoice_no": invoice.invNo,
-          "invoice_type": invoice.sourceTable ?? "NOTAX",
+          "invoice_type":  "NOTAX",  //invoice.sourceTable ??
           "invoice_amount": invoice.netTotal,
           "payment_amount": paymentAmount,
           "payment_mode": paymentMode,
