@@ -278,6 +278,7 @@ import 'SetUp/ItemsListScreen/ItemUnitScreen.dart';
 import 'SetUp/ItemsListScreen/ItemsListsScreen.dart';
 import 'SetUp/SalesAreaScreen/SalesAreaScreen.dart';
 import 'SetUp/supplier/SupplierScreen.dart';
+import 'customer_payment/customer_payment_screen.dart';
 
 
 class SalesDashboard extends StatelessWidget {
@@ -366,12 +367,15 @@ class SalesDashboard extends StatelessWidget {
                 ),
 
 
-                // DashboardCard(
-                //   icon: Icons.wallet,
-                //   title: "Cash Deposit",
-                //   color: Colors.greenAccent,
-                //   onTap: () {},
-                // ),
+                DashboardCard(
+                  icon: Icons.wallet,
+                  title: "Customer Payment",
+                  color: Colors.greenAccent,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerPaymentScreen()));
+
+                  },
+                ),
                 // DashboardCard(
                 //   icon: Icons.cloud_upload_rounded,
                 //   title: "Load Return",
