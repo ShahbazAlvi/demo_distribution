@@ -122,8 +122,10 @@ class CustomerPaymentProvider with ChangeNotifier {
           "status": status,
         }),
       );
+      print(paymentNo+paymentDate+ "$customerId"+"$invoice.id"+"$invoice.invNo"+"$invoice.netTotal"+paymentMode+"$bankId"+status);
 
       final data = jsonDecode(response.body);
+      print(data);
 
       if (response.statusCode == 200 && data["success"] == true) {
         _isLoading = false;

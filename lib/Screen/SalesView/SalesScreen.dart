@@ -260,9 +260,11 @@
 //   }
 // }
 import 'dart:ui';
+import 'package:demo_distribution/Screen/SalesView/stock/stock_positions.dart';
 import 'package:flutter/material.dart';
 import '../../../compoents/AppColors.dart';
 import '../CustomerScreen/CustomersDefineScreen.dart';
+import '../PurchaseScreen/StockPositionScreen/StockPositionScreen.dart';
 import 'DailysaleScreen/DailySaleScreen.dart';
 import 'OrderTakeingscreen/OrderTakingScreen.dart';
 import 'RecoveryScreen/Recovery.dart';
@@ -391,6 +393,14 @@ class SalesDashboard extends StatelessWidget {
               const SizedBox(height: 14),
               _buildCardGrid([
                 DashboardCard(
+                  icon: Icons.cloud_upload_rounded,
+                  title: "Stock Positions",
+                  color: Colors.orangeAccent,
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const StockPositionScreen()));
+                  },
+                ),
+                DashboardCard(
                   icon: Icons.add_card,
                   title: "Amount Receivable",
                   color: Colors.redAccent,
@@ -433,83 +443,83 @@ class SalesDashboard extends StatelessWidget {
               const SizedBox(height: 30),
 
               // 🔸 Setup Section
-              _buildSectionTitle("🧩 Setup"),
-              const SizedBox(height: 14),
-              _buildCardGrid([
-                // DashboardCard(
-                //   icon: Icons.location_on_rounded,
-                //   title: "Sales Areas",
-                //   color: Colors.limeAccent,
-                //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesAreaScreen()));
-                //   },
-                // ),
-                // DashboardCard(
-                //   icon: Icons.category,
-                //   title: "Category Item",
-                //   color: Colors.orangeAccent,
-                //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
-                //   },
-                // ),
+              // _buildSectionTitle("🧩 Setup"),
+              // const SizedBox(height: 14),
+              // _buildCardGrid([
+              //   // DashboardCard(
+              //   //   icon: Icons.location_on_rounded,
+              //   //   title: "Sales Areas",
+              //   //   color: Colors.limeAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const SalesAreaScreen()));
+              //   //   },
+              //   // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.category,
+              //   //   title: "Category Item",
+              //   //   color: Colors.orangeAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
+              //   //   },
+              //   // ),
+              //
+              //   // DashboardCard(
+              //   //   icon: Icons.layers,
+              //   //   title: "Items Type ",
+              //   //   color: Colors.blueAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemTypeScreen()));
+              //   //   },
+              //   // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.straighten,
+              //   //   title: "Item Unit ",
+              //   //   color: Colors.tealAccent  ,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemUnitScreen()));
+              //   //   },
+              //   // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.inventory_2,
+              //   //   title: "List of Items",
+              //   //   color: Colors.lightBlueAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemListScreen()));
+              //   //   },
+              //   // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.people,
+              //   //   title: "Define Customers",
+              //   //   color: Colors.pinkAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomersDefineScreen()));
+              //   //   },
+              //   // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.person,
+              //   //   title: "Employee Information",
+              //   //   color: Colors.orangeAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const EmployeesScreen()));
+              //   //   },
+              //   // ),
+              //   // // DashboardCard(
+              //   // //   icon: Icons.local_shipping,
+              //   // //   title: "Vehicle Information",
+              //   // //   color: Colors.blueAccent,
+              //   // //   onTap: () {},
+              //   // // ),
+              //   // DashboardCard(
+              //   //   icon: Icons.store_rounded,
+              //   //   title: "Supplier",
+              //   //   color: Colors.tealAccent,
+              //   //   onTap: () {
+              //   //     Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierListScreen()));
+              //   //   },
+              //   // ),
+              // ]),
 
-                // DashboardCard(
-                //   icon: Icons.layers,
-                //   title: "Items Type ",
-                //   color: Colors.blueAccent,
-                //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemTypeScreen()));
-                //   },
-                // ),
-                // DashboardCard(
-                //   icon: Icons.straighten,
-                //   title: "Item Unit ",
-                //   color: Colors.tealAccent  ,
-                //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemUnitScreen()));
-                //   },
-                // ),
-                DashboardCard(
-                  icon: Icons.inventory_2,
-                  title: "List of Items",
-                  color: Colors.lightBlueAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ItemListScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.people,
-                  title: "Define Customers",
-                  color: Colors.pinkAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomersDefineScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.person,
-                  title: "Employee Information",
-                  color: Colors.orangeAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const EmployeesScreen()));
-                  },
-                ),
-                // DashboardCard(
-                //   icon: Icons.local_shipping,
-                //   title: "Vehicle Information",
-                //   color: Colors.blueAccent,
-                //   onTap: () {},
-                // ),
-                DashboardCard(
-                  icon: Icons.store_rounded,
-                  title: "Supplier",
-                  color: Colors.tealAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierListScreen()));
-                  },
-                ),
-              ]),
-
-              const SizedBox(height: 40),
+              //const SizedBox(height: 40),
             ],
           ),
         ),

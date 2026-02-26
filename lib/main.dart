@@ -37,6 +37,7 @@ import 'Provider/SaleManProvider/SaleManProvider.dart';
 import 'Provider/SalessProvider/SalessProvider.dart';
 import 'Provider/SupplierProvider/supplierProvider.dart';
 import 'Provider/customer_Payment/customer_payment_provider.dart';
+import 'Provider/stock_provider/stock_position_provider.dart';
 import 'Screen/splashview/splashLogo.dart';
 
 void main()async {
@@ -81,7 +82,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => DatewisePurchaseProvider()),
         ChangeNotifierProvider(create: (_) => SupplierwisePurchaseProvider()),
         ChangeNotifierProvider(create: (_) => ItemWisePurchaseProvider()),
-        ChangeNotifierProvider(create: (_)=>StockPositionProvider()),
+        //ChangeNotifierProvider(create: (_)=>StockPositionProvider()),
         ChangeNotifierProvider(create: (_)=>PayableAmountProvider()),
         ChangeNotifierProvider(create: (_) => CategoriesProvider()),
         ChangeNotifierProvider(create: (_) => ItemTypeProvider()),
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SubCategory()),
         ChangeNotifierProvider(create: (_) => ManufacturesProvider()),
         ChangeNotifierProvider(create: (_) => CustomerPaymentProvider()),
+        ChangeNotifierProvider(create: (_) => StockPositionProvider(),),
 
 
 

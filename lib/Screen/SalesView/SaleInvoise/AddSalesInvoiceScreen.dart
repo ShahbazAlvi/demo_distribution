@@ -438,28 +438,27 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
             value: int.parse(order.id),
             child: Container(
               width: MediaQuery.of(context).size.width - 80,
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              //padding: const EdgeInsets.symmetric(vertical: 8),
               child: Row(
                 children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF2563EB).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.receipt_outlined,
-                        color: Color(0xFF2563EB),
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
+                  // Container(
+                  //   width: 40,
+                  //   height: 40,
+                  //   decoration: BoxDecoration(
+                  //     color: const Color(0xFF2563EB).withOpacity(0.1),
+                  //     borderRadius: BorderRadius.circular(12),
+                  //   ),
+                  //   child: const Center(
+                  //     child: Icon(
+                  //       Icons.receipt_outlined,
+                  //       color: Color(0xFF2563EB),
+                  //       size: 20,
+                  //     ),
+                  //   ),
+                  // ),
+                 // const SizedBox(width: 12),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    child: Row(
                       children: [
                         Text(
                           order.soNo,
@@ -469,12 +468,13 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
                             color: Color(0xFF1E293B),
                           ),
                         ),
-                        const SizedBox(height: 2),
+                        SizedBox(width: 10),
                         Text(
                           order.customerName,
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 12,
+                            fontWeight: FontWeight.bold
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -1035,7 +1035,7 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        "₹${total.toStringAsFixed(2)}",
+                        "Rs${total.toStringAsFixed(2)}",
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w700,
@@ -1123,9 +1123,9 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
                               // Rate Field
                               Expanded(
                                 child: _buildInputField(
-                                  label: "Rate (₹)",
+                                  label: "Rate (Rs)",
                                   value: item.rate.toString(),
-                                  icon: Icons.currency_rupee,
+                                  icon: Icons.money,
                                   onChanged: (val) {
                                     item.rate = double.tryParse(val) ?? 0;
                                     setState(
@@ -1172,7 +1172,7 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
                                         ),
                                       ),
                                       Text(
-                                        "₹${item.lineTotal.toStringAsFixed(2)}",
+                                        "Rs${item.lineTotal.toStringAsFixed(2)}",
                                         style: const TextStyle(
                                           fontWeight: FontWeight.w700,
                                           fontSize: 14,
@@ -1222,7 +1222,7 @@ class _AddSalesInvoiceScreenState extends State<AddSalesInvoiceScreen>
                           ),
                         ),
                         Text(
-                          "₹${total.toStringAsFixed(2)}",
+                          "Rs:${total.toStringAsFixed(2)}",
                           style: const TextStyle(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,

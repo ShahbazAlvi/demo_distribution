@@ -155,7 +155,7 @@ class PurchaseDashboard extends StatelessWidget {
                   title: "Stock Position",
                   color: Colors.purpleAccent,
                   onTap: () {
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>StockPositionScreen()));
+                   // Navigator.push(context,MaterialPageRoute(builder: (context)=>StockPositionScreen()));
                   },
                 ),
               ]),

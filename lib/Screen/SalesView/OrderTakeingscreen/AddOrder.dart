@@ -734,22 +734,6 @@ class _AddOrderScreenState extends State<AddOrderScreen> {
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () => Navigator.pop(context),
       ),
-      actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: Icon(
-              widget.isUpdate ? Icons.edit_note : Icons.add_shopping_cart,
-              color: Colors.white,
-            ),
-            onPressed: () {},
-          ),
-        ),
-      ],
     );
   }
 

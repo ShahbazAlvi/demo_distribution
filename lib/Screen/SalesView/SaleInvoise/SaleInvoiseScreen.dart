@@ -409,24 +409,8 @@ class _SaleInvoiseScreenState extends State<SaleInvoiseScreen> {
         ),
       ),
       centerTitle: true,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: Colors.white),
-        onPressed: () {
-          // Open drawer if needed
-        },
-      ),
+
       actions: [
-        Container(
-          margin: const EdgeInsets.only(right: 16),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: IconButton(
-            icon: const Icon(Icons.notifications_none, color: Colors.white),
-            onPressed: () {},
-          ),
-        ),
         Padding(
           padding: const EdgeInsets.only(right: 12, top: 8, bottom: 8),
           child: ElevatedButton.icon(
@@ -618,8 +602,8 @@ class _SaleInvoiseScreenState extends State<SaleInvoiseScreen> {
           Container(width: 1, height: 30, color: Colors.grey.shade300),
           _buildStatItem(
             'Total Amount',
-            '₹${totalAmount.toStringAsFixed(2)}',
-            Icons.currency_rupee,
+            'Rs:${totalAmount.toStringAsFixed(2)}',
+            Icons.money,
             Colors.green,
           ),
           Container(width: 1, height: 30, color: Colors.grey.shade300),
@@ -1384,9 +1368,9 @@ class _InvoiceDetailsSheet extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     _buildDetailRow(
-                      Icons.currency_rupee,
+                      Icons.money,
                       'Gross Total',
-                      '₹${invoice.grossTotal?.toStringAsFixed(2) ?? '0.00'}',
+                      'Rs:${invoice.grossTotal?.toStringAsFixed(2) ?? '0.00'}',
                     ),
                     const SizedBox(height: 16),
                     Container(
@@ -1411,7 +1395,7 @@ class _InvoiceDetailsSheet extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            '₹${invoice.netTotal?.toStringAsFixed(2) ?? '0.00'}',
+                            'Rs:${invoice.netTotal?.toStringAsFixed(2) ?? '0.00'}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20,
