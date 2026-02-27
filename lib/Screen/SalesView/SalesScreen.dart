@@ -1,268 +1,9 @@
-// import 'package:distribution/Screen/SalesView/OrderTakeingscreen/OrderTakingScreen.dart';
-// import 'package:distribution/Screen/SalesView/SaleInvoise/SaleInvoiseScreen.dart';
-// import 'package:distribution/Screen/SalesView/SetUp/ItemsListScreen/ItemsListsScreen.dart';
-// import 'package:flutter/material.dart';
-// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-//
-// import '../../compoents/AppColors.dart';
-// import '../CustomerScreen/CustomersDefineScreen.dart';
-// import '../DashBoardScreen.dart';
-// import 'AnimationCard.dart';
-// import 'RecoveryScreen/Recovery.dart';
-// import 'ReportsScreen/AgingScreen/AgingScreen.dart';
-// import 'ReportsScreen/AmountReceivableDetails/AmountReceivableDetailsScreen.dart';
-// import 'ReportsScreen/CustomerLedgerScreen/LedgerScreen.dart';
-// import 'Sales/SalesScreen.dart';
-// import 'SetUp/EmployeeDefine/EmployeeDefine.dart';
-// import 'SetUp/SalesAreaScreen/SalesAreaScreen.dart';
-// import 'SetUp/supplier/SupplierScreen.dart';
-//
-// class SalesScreen extends StatefulWidget {
-//   const SalesScreen({super.key});
-//
-//   @override
-//   State<SalesScreen> createState() => _SalesScreenState();
-// }
-//
-// class _SalesScreenState extends State<SalesScreen> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         iconTheme: const IconThemeData(color: Colors.white),
-//         title: Center(child: const Text("Sales",
-//             style: TextStyle(
-//               color: Colors.white,
-//               fontWeight: FontWeight.bold,
-//               fontSize: 22,
-//               letterSpacing: 1.2,
-//             )),
-//         ),
-//         centerTitle: true,
-//         elevation: 6,
-//         flexibleSpace: Container(
-//           decoration: const BoxDecoration(
-//             gradient: LinearGradient(
-//               colors: [AppColors.secondary, AppColors.primary],
-//               begin: Alignment.topLeft,
-//               end: Alignment.bottomRight,
-//             ),
-//           ),
-//         ),
-//       ),
-//       body: SingleChildScrollView(
-//         child: Padding(
-//           padding: const EdgeInsets.all(16.0),
-//           child: Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Text("Functionalities",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-//                 Container(
-//                   width: double.infinity,
-//                   decoration: BoxDecoration(
-//                     color: AppColors.text,
-//                     borderRadius: BorderRadius.circular(20)
-//                   ),
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(16.0),
-//                     child: Wrap(
-//                       spacing: 10,
-//                       runSpacing: 10,
-//                       children: [
-//                         GestureDetector(
-//                           onTap: (){
-//                             Navigator.push(context,MaterialPageRoute(builder: (context)=>OrderTakingScreen()));
-//                           },
-//                           child: AnimationCard(
-//                             icon:Icons.add_card,
-//                             title: "Order Taking ",
-//                           ),
-//                         ),
-//                         GestureDetector(
-//                           onTap: (){
-//                             Navigator.push(context, MaterialPageRoute(builder: (context)=>RecoveryListScreen()));
-//                           },
-//                           child: AnimationCard(
-//                             icon: Icons.newspaper,
-//                             title: "Recovery",
-//                           ),
-//                         ),
-//                         GestureDetector(
-//                           onTap: (){
-//                             Navigator.push(context,MaterialPageRoute(builder: (context)=>SaleInvoiseScreen()));
-//                           },
-//                           child: AnimationCard(
-//                             icon: Icons.add_chart_rounded,
-//                             title: "Sales Invoice ",
-//                           ),
-//                         ),
-//                         GestureDetector(
-//                           onTap: (){
-//                             Navigator.push(context,MaterialPageRoute(builder: (context)=>SalessScreen()));
-//                           },
-//                           child: AnimationCard(
-//                             icon: Icons.sim_card_alert_rounded,
-//                             title: "Sales",
-//                           ),
-//                         ),
-//                         AnimationCard(
-//                           icon: Icons.wallet,
-//                           title: "Cash Deposit",
-//                         ),
-//                         AnimationCard(
-//                           icon: Icons.cloud_upload_rounded,
-//                           title: "Load Return",
-//                         ),
-//
-//
-//
-//
-//
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-//               SizedBox(height: 10,),
-//               Text("Reports",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-//               Container(
-//                 width: double.infinity,
-//                 decoration: BoxDecoration(
-//                     color: AppColors.text,
-//                     borderRadius: BorderRadius.circular(20)
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(16.0),
-//                   child: Wrap(
-//                     spacing: 10,
-//                     runSpacing: 10,
-//                     children: [
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context, MaterialPageRoute(builder: (context)=>ReceivableScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon:Icons.add_card,
-//                           title: "Amount Receivable",
-//                         ),
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>CustomerLedgerScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.newspaper,
-//                           title: "Customer Ledger",
-//                         ),
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>CreditAgingScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.add_chart_rounded,
-//                           title: "Credit Aging",
-//                         ),
-//                       ),
-//
-//                       AnimationCard(
-//                         icon: Icons.cloud_upload_rounded,
-//                         title: "Daily Sales Report",
-//                       ),
-//
-//
-//
-//
-//
-//                     ],
-//                   ),
-//                 ),
-//               ),
-//               SizedBox(height: 10,),
-//               Text("Setup",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 16),),
-//               Container(
-//                 width: double.infinity,
-//                 decoration: BoxDecoration(
-//                     color: AppColors.text,
-//                     borderRadius: BorderRadius.circular(20)
-//                 ),
-//                 child: Padding(
-//                   padding: const EdgeInsets.all(16.0),
-//                   child: Wrap(
-//                     spacing: 10,
-//                     runSpacing: 10,
-//                     children: [
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>SalesAreaScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon:Icons.location_on_rounded,
-//                           title: "Sales Areas ",
-//                         ),
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>ItemListScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.newspaper,
-//                           title: "List of Items",
-//                         ),
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>CustomersDefineScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.people,
-//                           title: "Define Customers ",
-//                         ),
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context, MaterialPageRoute(builder: (context)=>EmployeesScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.person,
-//                           title: "Employee Information",
-//                         ),
-//                       ),
-//                       AnimationCard(
-//                         icon: Icons.car_crash,
-//                         title: "Vehicle Information",
-//                       ),
-//                       GestureDetector(
-//                         onTap: (){
-//                           Navigator.push(context,MaterialPageRoute(builder: (context)=>SupplierListScreen()));
-//                         },
-//                         child: AnimationCard(
-//                           icon: Icons.car_rental_sharp,
-//                           title: "Supplier",
-//                         ),
-//                       ),
-//
-//
-//
-//
-//
-//
-//                     ],
-//                   ),
-//                 ),
-//               )
-//             ],
-//           ),
-//         ),
-//
-//       ),
-//
-//     );
-//   }
-// }
+
 import 'dart:ui';
 import 'package:demo_distribution/Screen/SalesView/stock/stock_positions.dart';
 import 'package:flutter/material.dart';
 import '../../../compoents/AppColors.dart';
+import '../../utils/access_control.dart';
 import '../CustomerScreen/CustomersDefineScreen.dart';
 import '../PurchaseScreen/StockPositionScreen/StockPositionScreen.dart';
 import 'DailysaleScreen/DailySaleScreen.dart';
@@ -283,9 +24,53 @@ import 'SetUp/supplier/SupplierScreen.dart';
 import 'customer_payment/customer_payment_screen.dart';
 
 
-class SalesDashboard extends StatelessWidget {
+class SalesDashboard extends StatefulWidget {
   const SalesDashboard({super.key});
 
+  @override
+  State<SalesDashboard> createState() => _SalesDashboardState();
+}
+
+class _SalesDashboardState extends State<SalesDashboard> {
+  // Permissions
+  bool canViewOrderBooking = false;
+  bool canViewSalesInvoice = false;
+  bool canViewRecovery     = false;
+  bool canViewCustomerPayment = false;
+  bool canViewStockPosition   = false;
+  bool canViewReceivable      = false;
+  bool canViewLedger          = false;
+  bool canViewAging           = false;
+  bool canViewDailySales      = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPermissions();
+  }
+  Future<void> _loadPermissions() async {
+    final orderBooking     = await AccessControl.canDo("can_view_order_booking");
+    final salesInvoice     = await AccessControl.canDo("can_view_sales_invoice_cash");
+    final recovery         = await AccessControl.canDo("can_view_recovery_voucher");
+    final customerPayment  = await AccessControl.canDo("can_view_customer_payments");
+    final stockPosition    = await AccessControl.canDo("can_view_stock_position");
+    final receivable       = await AccessControl.canDo("can_view_amount_receivables");
+    final ledger           = await AccessControl.canDo("can_view_customer_ledger_report");
+    final aging            = await AccessControl.canDo("can_view_credit_aging");
+    final dailySales       = await AccessControl.canDo("can_view_daily_sales_report");
+
+    setState(() {
+      canViewOrderBooking    = orderBooking;
+      canViewSalesInvoice    = salesInvoice;
+      canViewRecovery        = recovery;
+      canViewCustomerPayment = customerPayment;
+      canViewStockPosition   = stockPosition;
+      canViewReceivable      = receivable;
+      canViewLedger          = ledger;
+      canViewAging           = aging;
+      canViewDailySales      = dailySales;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -343,6 +128,7 @@ class SalesDashboard extends StatelessWidget {
               _buildSectionTitle("⚙️ Functionalities"),
               const SizedBox(height: 14),
               _buildCardGrid([
+                if (canViewOrderBooking)
                 DashboardCard(
                   icon: Icons.add_card,
                   title: "Order Taking",
@@ -351,6 +137,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const OrderTakingScreen()));
                   },
                 ),
+                if (canViewSalesInvoice)
                 DashboardCard(
                   icon: Icons.add_chart_rounded,
                   title: "Sales Invoice",
@@ -359,6 +146,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const SaleInvoiseScreen()));
                   },
                 ),
+                if (canViewRecovery)
                 DashboardCard(
                   icon: Icons.newspaper,
                   title: "Recovery",
@@ -368,7 +156,7 @@ class SalesDashboard extends StatelessWidget {
                   },
                 ),
 
-
+                if (canViewCustomerPayment)
                 DashboardCard(
                   icon: Icons.wallet,
                   title: "Customer Payment",
@@ -392,6 +180,7 @@ class SalesDashboard extends StatelessWidget {
               _buildSectionTitle("📊 Reports"),
               const SizedBox(height: 14),
               _buildCardGrid([
+                if (canViewStockPosition)
                 DashboardCard(
                   icon: Icons.cloud_upload_rounded,
                   title: "Stock Positions",
@@ -400,6 +189,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const StockPositionScreen()));
                   },
                 ),
+                if (canViewReceivable)
                 DashboardCard(
                   icon: Icons.add_card,
                   title: "Amount Receivable",
@@ -408,6 +198,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const ReceivableScreen()));
                   },
                 ),
+                if (canViewLedger)
                 DashboardCard(
                   icon: Icons.newspaper,
                   title: "Customer Ledger",
@@ -416,6 +207,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const CustomerLedgerScreen()));
                   },
                 ),
+                if (canViewAging)
                 DashboardCard(
                   icon: Icons.add_chart_rounded,
                   title: "Credit Aging",
@@ -424,6 +216,7 @@ class SalesDashboard extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const CreditAgingScreen()));
                   },
                 ),
+                if (canViewDailySales)
                 DashboardCard(
                   icon: Icons.sim_card_alert_rounded,
                   title: "Daily Sales",

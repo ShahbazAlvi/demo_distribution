@@ -451,6 +451,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../Provider/OrderTakingProvider/OrderTakingProvider.dart';
 import '../../../compoents/AppColors.dart';
+import '../../../utils/access_control.dart';
 import 'AddOrder.dart';
 import 'UpdateOrderScreen.dart';
 import 'package:shimmer/shimmer.dart';
@@ -469,6 +470,12 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
   final TextEditingController _searchController = TextEditingController();
   String searchQuery = '';
 
+  // ✅ Permission Variables
+  bool canAddOrder    = false;
+  bool canEditOrder   = false;
+  bool canDeleteOrder = false;
+  bool canViewOrder   = false;
+
   @override
   void initState() {
     super.initState();
@@ -476,7 +483,32 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
       Provider.of<OrderTakingProvider>(context, listen: false).FetchOrderTaking();
     });
     _scrollController.addListener(_onScroll);
+    _loadPermissions(); // ✅ Load permissions
   }
+
+  // ✅ Permission Load Function
+  Future<void> _loadPermissions() async {
+    final add    = await AccessControl.canDo("can_add_order_booking");
+    final edit   = await AccessControl.canDo("can_edit_order_booking");
+    final delete = await AccessControl.canDo("can_delete_order_booking");
+    final view   = await AccessControl.canDo("can_view_order_booking");
+
+    setState(() {
+      canAddOrder    = add;
+      canEditOrder   = edit;
+      canDeleteOrder = delete;
+      canViewOrder   = view;
+    });
+  }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     Provider.of<OrderTakingProvider>(context, listen: false).FetchOrderTaking();
+  //   });
+  //   _scrollController.addListener(_onScroll);
+  // }
 
   @override
   void dispose() {
@@ -772,6 +804,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              if (canAddOrder)
               ElevatedButton.icon(
                 onPressed: _navigateToAddOrder,
                 icon: const Icon(Icons.add),
@@ -1040,6 +1073,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    if (canViewOrder)
                     _buildActionButton(
                       icon: Icons.visibility,
                       color: Colors.blue,
@@ -1053,6 +1087,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                       },
                     ),
                     const SizedBox(width: 8),
+                    if (canEditOrder)
                     _buildActionButton(
                       icon: Icons.edit,
                       color: AppColors.betprologo,
@@ -1066,6 +1101,7 @@ class _OrderTakingScreenState extends State<OrderTakingScreen> {
                       },
                     ),
                     const SizedBox(width: 8),
+                    if (canDeleteOrder)
                     _buildActionButton(
                       icon: Icons.delete,
                       color: Colors.red,

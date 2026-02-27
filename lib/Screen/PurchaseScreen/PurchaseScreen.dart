@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../compoents/AppColors.dart';
+import '../../utils/access_control.dart';
 import '../SalesView/AnimationCard.dart';
 import '../SalesView/SetUp/supplier/SupplierScreen.dart';
 import 'DateWisePurchaseScreen/DateWisePurchaseScreen.dart';
@@ -17,9 +18,52 @@ import 'SupplierWisePurchaseScreen/SupplierWisePurchaseScreen.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 
-class PurchaseDashboard extends StatelessWidget {
+class PurchaseDashboard extends StatefulWidget {
   const PurchaseDashboard({super.key});
 
+  @override
+  State<PurchaseDashboard> createState() => _PurchaseDashboardState();
+}
+
+class _PurchaseDashboardState extends State<PurchaseDashboard> {
+  bool canViewOrderBooking = false;
+  bool canViewSalesInvoice = false;
+  bool canViewRecovery     = false;
+  bool canViewCustomerPayment = false;
+  bool canViewStockPosition   = false;
+  bool canViewReceivable      = false;
+  bool canViewLedger          = false;
+  bool canViewAging           = false;
+  bool canViewDailySales      = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPermissions();
+  }
+  Future<void> _loadPermissions() async {
+    final orderBooking     = await AccessControl.canDo("can_view_order_booking");
+    final purchaseOrder     = await AccessControl.canDo("can_view_purchase");
+    final recovery         = await AccessControl.canDo("can_view_recovery_voucher");
+    final customerPayment  = await AccessControl.canDo("can_view_customer_payments");
+    final stockPosition    = await AccessControl.canDo("can_view_stock_position");
+    final receivable       = await AccessControl.canDo("can_view_amount_receivables");
+    final ledger           = await AccessControl.canDo("can_view_customer_ledger_report");
+    final aging            = await AccessControl.canDo("can_view_credit_aging");
+    final dailySales       = await AccessControl.canDo("can_view_daily_sales_report");
+
+    setState(() {
+      canViewOrderBooking    = orderBooking;
+      canViewSalesInvoice    = purchaseOrder;
+      canViewRecovery        = recovery;
+      canViewCustomerPayment = customerPayment;
+      canViewStockPosition   = stockPosition;
+      canViewReceivable      = receivable;
+      canViewLedger          = ledger;
+      canViewAging           = aging;
+      canViewDailySales      = dailySales;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,7 +207,7 @@ class PurchaseDashboard extends StatelessWidget {
               const SizedBox(height: 30),
 
               // 🔸 Setup Section
-              _buildSectionTitle("🧩 Setup"),  
+              _buildSectionTitle("🧩 Setup"),
               const SizedBox(height: 14),
               _buildCardGrid([
                 DashboardCard(
