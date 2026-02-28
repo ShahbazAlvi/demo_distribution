@@ -685,14 +685,14 @@ class _DailySaleReportScreenState extends State<DailySaleReportScreen>
                   Expanded(
                     child: _buildSummaryItem(
                       label: "Total Sales",
-                      value: "₹${NumberFormat('#,##,###').format(reportData.summary.payments.totalInvoiceAmount)}",
+                      value: "Rs:${NumberFormat('#,##,###').format(reportData.summary.payments.totalInvoiceAmount)}",
                       icon: Icons.shopping_cart_outlined,
                     ),
                   ),
                   Expanded(
                     child: _buildSummaryItem(
                       label: "Total Recovery",
-                      value: "₹${NumberFormat('#,##,###').format(reportData.summary.recoveries.totalRecovered)}",
+                      value: "Rs:${NumberFormat('#,##,###').format(reportData.summary.recoveries.totalRecovered)}",
                       icon: Icons.account_balance_wallet_outlined,
                     ),
                   ),

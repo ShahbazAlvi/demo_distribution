@@ -320,7 +320,7 @@ class _ReceivableScreenState extends State<ReceivableScreen>
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "₹${NumberFormat('#,##,###').format(totalReceivable)}",
+                      "Rs:${NumberFormat('#,##,###').format(totalReceivable)}",
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 32,
@@ -712,24 +712,24 @@ class _ReceivableScreenState extends State<ReceivableScreen>
                                               ],
                                             ),
                                           ),
-                                          const SizedBox(width: 10),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.grey.shade100,
-                                              borderRadius: BorderRadius.circular(12),
-                                            ),
-                                            child: Text(
-                                              "ID: ${item.id ?? 'N/A'}",
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: Colors.grey[600],
-                                              ),
-                                            ),
-                                          ),
+                                          // const SizedBox(width: 10),
+                                          // Container(
+                                          //   padding: const EdgeInsets.symmetric(
+                                          //     horizontal: 8,
+                                          //     vertical: 2,
+                                          //   ),
+                                          //   decoration: BoxDecoration(
+                                          //     color: Colors.grey.shade100,
+                                          //     borderRadius: BorderRadius.circular(12),
+                                          //   ),
+                                          //   child: Text(
+                                          //     "ID: ${item.id ?? 'N/A'}",
+                                          //     style: TextStyle(
+                                          //       fontSize: 10,
+                                          //       color: Colors.grey[600],
+                                          //     ),
+                                          //   ),
+                                          // ),
                                         ],
                                       ),
                                     ],
@@ -767,7 +767,7 @@ class _ReceivableScreenState extends State<ReceivableScreen>
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        "₹${NumberFormat('#,##,###').format(balance)}",
+                                        "Rs:${NumberFormat('#,##,###').format(balance)}",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 15,

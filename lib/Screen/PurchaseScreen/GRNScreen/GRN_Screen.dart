@@ -15,10 +15,7 @@ class GRNScreen extends StatefulWidget {
 
 class _GRNScreenState extends State<GRNScreen> {
   @override
-  // void initState() {
-  //   super.initState();
-  //   Provider.of<GRNProvider>(context, listen: false).getGRNData();
-  // }
+
   @override
   void initState() {
     super.initState();

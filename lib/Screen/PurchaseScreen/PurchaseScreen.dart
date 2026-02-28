@@ -26,8 +26,8 @@ class PurchaseDashboard extends StatefulWidget {
 }
 
 class _PurchaseDashboardState extends State<PurchaseDashboard> {
-  bool canViewOrderBooking = false;
-  bool canViewSalesInvoice = false;
+  bool canViewgrn = false;
+  bool canViewPurchaseOrder = false;
   bool canViewRecovery     = false;
   bool canViewCustomerPayment = false;
   bool canViewStockPosition   = false;
@@ -42,19 +42,19 @@ class _PurchaseDashboardState extends State<PurchaseDashboard> {
     _loadPermissions();
   }
   Future<void> _loadPermissions() async {
-    final orderBooking     = await AccessControl.canDo("can_view_order_booking");
-    final purchaseOrder     = await AccessControl.canDo("can_view_purchase");
+    final grn     = await AccessControl.canDo("can_view_goods_receipt_note");
+    final purchaseOrder     = await AccessControl.canDo("can_view_purchase_order");
     final recovery         = await AccessControl.canDo("can_view_recovery_voucher");
     final customerPayment  = await AccessControl.canDo("can_view_customer_payments");
     final stockPosition    = await AccessControl.canDo("can_view_stock_position");
     final receivable       = await AccessControl.canDo("can_view_amount_receivables");
-    final ledger           = await AccessControl.canDo("can_view_customer_ledger_report");
+    final ledger           = await AccessControl.canDo("can_view_supplier_ledger_report");
     final aging            = await AccessControl.canDo("can_view_credit_aging");
     final dailySales       = await AccessControl.canDo("can_view_daily_sales_report");
 
     setState(() {
-      canViewOrderBooking    = orderBooking;
-      canViewSalesInvoice    = purchaseOrder;
+      canViewgrn    = grn;
+      canViewPurchaseOrder    = purchaseOrder;
       canViewRecovery        = recovery;
       canViewCustomerPayment = customerPayment;
       canViewStockPosition   = stockPosition;
@@ -64,164 +64,175 @@ class _PurchaseDashboardState extends State<PurchaseDashboard> {
       canViewDailySales      = dailySales;
     });
   }
+  Future<void> _onRefresh() async {
+    await _loadPermissions();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //backgroundColor: const Color(0xFFF6F7FB),
       backgroundColor: Color(0xFFEEEEEE),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // 🔹 Header with gradient and title
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [AppColors.secondary, AppColors.primary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.primary,
+        backgroundColor: Colors.white,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 🔹 Header with gradient and title
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.secondary, AppColors.primary],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
                   ),
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    )
-                  ],
-                ),
-                child: const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Purchase Dashboard",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 26,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.8,
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Purchase Dashboard",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 0.8,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 8),
-                    Text(
-                      "Manage purchases, ledgers, and suppliers in one place",
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
-                    ),
-                  ],
+                      SizedBox(height: 8),
+                      Text(
+                        "Manage purchases, ledgers, and suppliers in one place",
+                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              const SizedBox(height: 28),
+                const SizedBox(height: 28),
 
-              // 🔸 Functionalities Section
-              _buildSectionTitle("⚙️ Functionalities"),
-              const SizedBox(height: 14),
-              _buildCardGrid([
-                DashboardCard(
-                  icon: Icons.receipt_long_rounded,
-                  title: "GRN",
-                  color: Colors.tealAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>GRNScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.receipt_long_rounded,
-                  title: "Purchase Order",
-                  color: Colors.tealAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>PurchaseOrderScreen()));
-                  },
-                ),
-                // DashboardCard(
-                //   icon: Icons.attach_money_rounded,
-                //   title: "Payment to Supplier",
-                //   color: Colors.amberAccent,
-                //   onTap: () {
-                //     Navigator.push(context, MaterialPageRoute(builder: (context)=>PaymentToSupplierScreen()));
-                //   },
-                // ),
-              ]),
+                // 🔸 Functionalities Section
+                _buildSectionTitle("⚙️ Functionalities"),
+                const SizedBox(height: 14),
+                _buildCardGrid([
+                  if(canViewgrn)
+                  DashboardCard(
+                    icon: Icons.receipt_long_rounded,
+                    title: "GRN",
+                    color: Colors.tealAccent,
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>GRNScreen()));
+                    },
+                  ),
+                  if(canViewPurchaseOrder)
+                  DashboardCard(
+                    icon: Icons.receipt_long_rounded,
+                    title: "Purchase Order",
+                    color: Colors.tealAccent,
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>PurchaseOrderScreen()));
+                    },
+                  ),
+                  // DashboardCard(
+                  //   icon: Icons.attach_money_rounded,
+                  //   title: "Payment to Supplier",
+                  //   color: Colors.amberAccent,
+                  //   onTap: () {
+                  //     Navigator.push(context, MaterialPageRoute(builder: (context)=>PaymentToSupplierScreen()));
+                  //   },
+                  // ),
+                ]),
 
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-              // 🔸 Reports Section
-              _buildSectionTitle("📊 Reports"),
-              const SizedBox(height: 14),
-              _buildCardGrid([
-                DashboardCard(
-                  icon: Icons.account_balance_wallet_rounded,
-                  title: "Amount Payable",
-                  color: Colors.pinkAccent,
-                  onTap: () {
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>PayableAmountScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.date_range_rounded,
-                  title: "DateWise Purchase",
-                  color: Colors.lightBlueAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>DatewisePurchaseScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.shopping_bag_rounded,
-                  title: "ItemsWise Purchase",
-                  color: Colors.orangeAccent,
-                  onTap: () {
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>ItemWisePurchaseScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.people_alt_rounded,
-                  title: "Supplier Ledger",
-                  color: Colors.greenAccent,
-                  onTap: () {
-                    Navigator.push(context,MaterialPageRoute(builder: (context)=>SupplierLedgerScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.person_pin_rounded,
-                  title: "SupplierWise Purchase",
-                  color: Colors.cyanAccent,
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>SupplierwisePurchaseScreen()));
-                  },
-                ),
-                DashboardCard(
-                  icon: Icons.equalizer_rounded,
-                  title: "Stock Position",
-                  color: Colors.purpleAccent,
-                  onTap: () {
-                   // Navigator.push(context,MaterialPageRoute(builder: (context)=>StockPositionScreen()));
-                  },
-                ),
-              ]),
+                // 🔸 Reports Section
+                _buildSectionTitle("📊 Reports"),
+                const SizedBox(height: 14),
+                _buildCardGrid([
+                  DashboardCard(
+                    icon: Icons.account_balance_wallet_rounded,
+                    title: "Amount Payable",
+                    color: Colors.pinkAccent,
+                    onTap: () {
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>PayableAmountScreen()));
+                    },
+                  ),
+                  DashboardCard(
+                    icon: Icons.date_range_rounded,
+                    title: "DateWise Purchase",
+                    color: Colors.lightBlueAccent,
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>DatewisePurchaseScreen()));
+                    },
+                  ),
+                  DashboardCard(
+                    icon: Icons.shopping_bag_rounded,
+                    title: "ItemsWise Purchase",
+                    color: Colors.orangeAccent,
+                    onTap: () {
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>ItemWisePurchaseScreen()));
+                    },
+                  ),
+                  if(canViewLedger)
+                  DashboardCard(
+                    icon: Icons.people_alt_rounded,
+                    title: "Supplier Ledger",
+                    color: Colors.greenAccent,
+                    onTap: () {
+                      Navigator.push(context,MaterialPageRoute(builder: (context)=>SupplierLedgerScreen()));
+                    },
+                  ),
+                  DashboardCard(
+                    icon: Icons.person_pin_rounded,
+                    title: "SupplierWise Purchase",
+                    color: Colors.cyanAccent,
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>SupplierwisePurchaseScreen()));
+                    },
+                  ),
+                  // DashboardCard(
+                  //   icon: Icons.equalizer_rounded,
+                  //   title: "Stock Position",
+                  //   color: Colors.purpleAccent,
+                  //   onTap: () {
+                  //    // Navigator.push(context,MaterialPageRoute(builder: (context)=>StockPositionScreen()));
+                  //   },
+                  // ),
+                ]),
 
-              const SizedBox(height: 30),
+                const SizedBox(height: 30),
 
-              // 🔸 Setup Section
-              _buildSectionTitle("🧩 Setup"),
-              const SizedBox(height: 14),
-              _buildCardGrid([
-                DashboardCard(
-                  icon: Icons.local_shipping_rounded,
-                  title: "Supplier",
-                  color: Color(0xFF00C9A7),
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierListScreen()));
-                  },
-                ),
-              ]),
+                // 🔸 Setup Section
+                // _buildSectionTitle("🧩 Setup"),
+                // const SizedBox(height: 14),
+                // _buildCardGrid([
+                //   DashboardCard(
+                //     icon: Icons.local_shipping_rounded,
+                //     title: "Supplier",
+                //     color: Color(0xFF00C9A7),
+                //     onTap: () {
+                //       Navigator.push(context, MaterialPageRoute(builder: (_) => const SupplierListScreen()));
+                //     },
+                //   ),
+                // ]),
 
-              const SizedBox(height: 40),
-            ],
+                const SizedBox(height: 40),
+              ],
+            ),
           ),
         ),
       ),
