@@ -1,9 +1,13 @@
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Provider/DashBoardProvider.dart';
 import '../model/DashBoardModel.dart';
+import '../utils/access_control.dart';
 import 'Auth/LoginScreen.dart';
 import 'Bank/BankDefine/BanksDefineScreen.dart';
 import 'CustomerScreen/CustomersDefineScreen.dart';
@@ -15,6 +19,7 @@ import 'SalesView/SetUp/ItemsListScreen/ItemsListsScreen.dart';
 import 'dashBoardView/calender.dart';
 import 'dashBoardView/chartdashboard.dart';
 import 'dashBoardView/recoverienChart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboardscreen extends StatefulWidget {
   const Dashboardscreen({super.key});
@@ -75,12 +80,52 @@ class _DashboardscreenState extends State<Dashboardscreen> {
         salesData = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     }
   }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   Future.delayed(Duration.zero, () {
+  //     Provider.of<DashBoardProvider>(context, listen: false)
+  //         .fetchDashboardData();
+  //   });
+  // }
+  bool isAdmin = false;
+  bool canViewCustomers = false;
+  bool canViewStaff = false;
+  bool canViewSales = false;
+  bool canViewPurchase=false;
+  bool canViewDashboard=false;
+  bool canViewBank=false;
+
+
   @override
   void initState() {
     super.initState();
+
     Future.delayed(Duration.zero, () {
       Provider.of<DashBoardProvider>(context, listen: false)
           .fetchDashboardData();
+    });
+
+    loadAccess();
+  }
+
+  Future<void> loadAccess() async {
+    // Use canDo() which checks admin OR permission
+    final admin     = await AccessControl.isAdmin();
+    final customers = await AccessControl.canDo("can_view_customer_payments");
+    final staff     = await AccessControl.canDo("can_view_employees");
+    final sales     = await AccessControl.canDo("can_view_sales");
+    final purchase  = await AccessControl.canDo("can_view_purchase");
+    final dashboard  = await AccessControl.canDo("can_view_dashboard");
+    final bank  = await AccessControl.canDo("can_view_bank");
+
+    setState(() {
+      isAdmin          = admin;
+      canViewCustomers = customers;
+      canViewStaff     = staff;
+      canViewSales     = sales;
+      canViewPurchase  = purchase;
+
     });
   }
 
@@ -156,7 +201,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
 
             // Now add username text outside const
 
-
+            if(canViewDashboard)
             ListTile(
               leading: const Icon(Icons.dashboard, color: Color(0xFF5B86E5)),
               title: const Text('Dashboard'),
@@ -164,14 +209,24 @@ class _DashboardscreenState extends State<Dashboardscreen> {
                 Navigator.pop(context);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.sell, color: Color(0xFF5B86E5)),
-              title: const Text('Sales'),
-              onTap: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>SalesDashboard()));
-
-              },
-            ),
+            // ListTile(
+            //   leading: const Icon(Icons.sell, color: Color(0xFF5B86E5)),
+            //   title: const Text('Sales'),
+            //   onTap: () {
+            //     Navigator.push(context, MaterialPageRoute(builder: (context)=>SalesDashboard()));
+            //
+            //   },
+            // ),
+            if (canViewSales)
+              ListTile(
+                leading: const Icon(Icons.sell, color: Color(0xFF5B86E5)),
+                title: const Text('Sales'),
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => SalesDashboard()));
+                },
+              ),
+            if(canViewPurchase)
             ListTile(
               leading: const Icon(Icons.shop, color: Color(0xFF5B86E5)),
               title: const Text('Purchase'),
@@ -180,6 +235,7 @@ class _DashboardscreenState extends State<Dashboardscreen> {
 
               },
             ),
+            if(canViewBank)
             ListTile(
               leading: const Icon(Icons.account_balance, color: Color(0xFF5B86E5)),
               title: const Text('Bank'),
@@ -292,112 +348,8 @@ class _DashboardscreenState extends State<Dashboardscreen> {
 
 
               const SizedBox(height: 16),
-              // Padding(
-              //   padding: const EdgeInsets.all(8.0),
-              //   child: Wrap(
-              //     spacing: 16,
-              //     runSpacing: 16,
-              //     children: [
-              //       AnimatedDashboardCard(icon: Icons.person, title:'Total Sales', count:'50'/*provider.totalCustomers.toString()*/, bcolor:Colors.green),
-              //       AnimatedDashboardCard(icon: Icons.shop, title:'Total Purchases', count:'85'/*provider.totalProducts.toString()*/, bcolor:Colors.red),
-              //       AnimatedDashboardCard(icon: Icons.people_alt, title:'Total Recovenes', count:"34"/*provider.totalStaffs.toString()*/, bcolor:Colors.blue),
-              //       AnimatedDashboardCard(icon: Icons.account_balance_wallet, title:'Total Expenses', count:'40'/*provider.totalTransactions.toString()*/, bcolor:Colors.orange),
-              //
-              //
-              //     ],
-              //   ),
-              //
-              // ),
+
             const SizedBox(height: 16),
-            // FutureBuilder<DashboardModel?>(
-            //     future: Provider.of<DashBoardProvider>(context,
-            //         listen: false)
-            //         .fetchDashboardData(),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.connectionState == ConnectionState.waiting) {
-            //         return const Center(
-            //           child: CircularProgressIndicator(),
-            //         );
-            //       } else if (snapshot.hasError || !snapshot.hasData) {
-            //         return const Center(
-            //           child: Text("Failed to load data"),
-            //         );
-            //       }
-            //
-            //       final dashboardData = snapshot.data!;
-            //       salesData = dashboardData.charts.salesProfit
-            //           .map((e) => e.value.toDouble())
-            //           .toList();
-            //       final recovered = dashboardData.charts.customerBalance
-            //           .map((e) => e.value.toDouble())
-            //           .toList();
-            //       final due = recovered
-            //           .map((e) => e * 0.8) // Example: due = 80% of recovered
-            //           .toList();
-            //
-            //       return Column(
-            //           children: [
-            //             Padding(
-            //               padding: const EdgeInsets.all(8.0),
-            //               child: Wrap(
-            //                 spacing: 16,
-            //                 runSpacing: 16,
-            //                 children: [
-            //                   GestureDetector(
-            //                     onTap: (){
-            //                       Navigator.push(context,MaterialPageRoute(builder: (context)=>DailySaleReportScreen()));
-            //                     },
-            //                     child: AnimatedDashboardCard(
-            //                         icon: Icons.person,
-            //                         title: 'Total Sales',
-            //                         count: dashboardData.stats.totalSales
-            //                             .toString(),
-            //                         bcolor: Colors.green),
-            //                   ),
-            //                   GestureDetector(
-            //                     onTap: (){
-            //                       Navigator.push(context,MaterialPageRoute(builder: (context)=>ItemListScreen()));
-            //                     },
-            //                     child: AnimatedDashboardCard(
-            //                         icon: Icons.shop,
-            //                         title: 'Total Products',
-            //                         count: dashboardData.stats.totalProducts
-            //                             .toString(),
-            //                         bcolor: Colors.red),
-            //                   ),
-            //                   GestureDetector(
-            //                     onTap: (){
-            //                       Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomersDefineScreen()));
-            //                     },
-            //                     child: AnimatedDashboardCard(
-            //                         icon: Icons.people_alt,
-            //                         title: 'Total Customer',
-            //                         count: dashboardData.stats.totalCustomers
-            //                             .toString(),
-            //                         bcolor: Colors.blue),
-            //                   ),
-            //                   GestureDetector(
-            //                     onTap: (){
-            //                       Navigator.push(context, MaterialPageRoute(builder: (context)=>EmployeesScreen()));
-            //                     },
-            //                     child: AnimatedDashboardCard(
-            //                         icon: Icons.account_balance_wallet,
-            //                         title: 'Total Staff',
-            //                         count: dashboardData.stats.totalStaff
-            //                             .toString(),
-            //                         bcolor: Colors.orange),
-            //                   ),
-            //                 ],
-            //               ),
-            //             )
-            //
-            //
-            //           ]
-            //       );
-            //
-            //     }
-            //
-            //           ),
 
               Consumer<DashBoardProvider>(
                 builder: (context, provider, child) {
@@ -549,6 +501,18 @@ class _AnimatedDashboardCardState extends State<AnimatedDashboardCard> {
         ],
       ),
     );
+  }
+
+
+
+
+// Fix the empty _getUsername() in Dashboardscreen:
+  Future<String?> _getUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userJson = prefs.getString('user');
+    if (userJson == null) return "Admin";
+    final user = jsonDecode(userJson);
+    return user['username'];
   }
 }
 

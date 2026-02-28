@@ -60,17 +60,40 @@ class LoginProvider with ChangeNotifier{
 
         final prefs = await SharedPreferences.getInstance();
 
+        final access = data["data"]["access"];
+        //print(access.permissions_ids);
+
         await prefs.setString('token', data["data"]["accessToken"]);
-        await prefs.setString(
-            'username', data['data']['user']['username'] ?? '');
         await prefs.setString('user', jsonEncode(data["data"]["user"]));
+
+        // ⭐ SAVE ROLE + PERMISSIONS
+        await prefs.setStringList(
+            'roles',
+            List<String>.from(access["roles"].map((e) => e["name"]))
+        );
+
+        await prefs.setStringList(
+            'permission_codes',
+            List<String>.from(access["permission_codes"] ?? [])
+        );
+
+        // ⭐ OWNER CHECK (ADMIN)
+        // Replace your is_owner block with this:
+        //final access = data["data"]["access"];
+
+        bool isOwner = access["is_owner"] == true;
+// Fallback: also check companies list
+        if (!isOwner &&
+            data["data"]["companies"] != null &&
+            data["data"]["companies"].isNotEmpty) {
+          isOwner = data["data"]["companies"][0]["is_owner"] == 1;
+        }
+        await prefs.setBool('is_owner', isOwner);
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Dashboardscreen()),
+          MaterialPageRoute(builder: (_) => const Dashboardscreen()),
         );
-      } else {
-        message = data["message"] ?? "Invalid credentials";
       }
 
 
